@@ -92,8 +92,13 @@ export function Profile() {
             </View>
             <Text style={{ color: "white", fontSize: 20, fontWeight: "900", marginTop: 12 }}>{user.name}</Text>
             <Text style={{ color: C.textMuted, fontSize: 12, marginTop: 2 }}>{user.university}</Text>
-            <View style={{ backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4, marginTop: 10 }}>
-              <Text style={{ color: C.primary, fontSize: 12, fontWeight: "900" }}>{user.gxbankTier}</Text>
+            <View style={{ flexDirection: "row", gap: 8, marginTop: 10 }}>
+              <View style={{ backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
+                <Text style={{ color: C.primary, fontSize: 12, fontWeight: "900" }}>{user.gxbankTier}</Text>
+              </View>
+              <View style={{ backgroundColor: "rgba(246,166,35,0.15)", borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 }}>
+                <Text style={{ color: C.amber, fontSize: 12, fontWeight: "900" }}>🏆 Top 4% National</Text>
+              </View>
             </View>
             <Text style={{ color: C.textMuted, fontSize: 11, marginTop: 6 }}>Member since {user.joinDate}</Text>
           </View>

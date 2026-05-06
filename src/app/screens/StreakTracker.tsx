@@ -158,7 +158,7 @@ export function StreakTracker() {
             </View>
             <View style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 20, borderWidth: 1, borderColor: C.border, padding: 14 }}>
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>Your ranking</Text>
-              <Text style={{ color: C.primary, fontSize: 20, fontWeight: "900" }}>Top 22%</Text>
+              <Text style={{ color: C.primary, fontSize: 20, fontWeight: "900" }}>Top 4%</Text>
             </View>
           </View>
         </ScrollView>
