@@ -81,10 +81,14 @@ src/
    - Tap **"Simulate Transaction"** and select **GrabFood**. Notice the friendly nudge telling you you're healthy and offering to auto-save RM 2 to your goals.
    - Tap **"Simulate Transaction"** and select **Shopee**. Notice the AI immediately reacts to your category spending hitting 80%, changing its tone to warn you and suggesting you "redirect" that money instead.
    - Tap **"Simulate Transaction"** and select **Shopee** AGAIN. The AI detects you've breached 100% of your Shopping budget and instantly throws a red **🚨 Budget Exceeded** alert, completely disabling the save button and forcing you to Review your Budget.
-4. Navigate to **Spending** to see the category spending rings update in real-time.
-5. Navigate to **Goals** → add a custom Emoji to your savings goal.
-6. Navigate to **Profile** → access the Challenge leaderboard and Debt Radar (BNPL risk calculator).
-7. Tap the **Log Out** button on the Profile screen to instantly loop back to the Onboarding welcome screen!
+4. **The Gamified Streak Recovery:**
+   - Since you are now over budget from the Shopee trap, navigate to the **Streak** tab.
+   - Show how the gamification engine reacted: your 11-day streak is frozen, the flame is dead, and the red **Streak Frozen** penalty box has appeared.
+   - Tap **"Start 3-Day Sprint"** to simulate the user successfully passing the recovery mode. Watch the 11-day streak instantly restore!
+5. Navigate to **Spending** to see the category spending rings update in real-time.
+6. Navigate to **Goals** → add a custom Emoji to your savings goal.
+7. Navigate to **Profile** → access the Challenge leaderboard and Debt Radar (BNPL risk calculator).
+8. Tap the **Log Out** button on the Profile screen to instantly loop back to the Onboarding welcome screen!
 
 ---
 
