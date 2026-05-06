@@ -75,15 +75,16 @@ src/
 
 ## ✨ Demo Flow
 
-1. Open the app → swipe through the **Onboarding** screens to see the value prop
-2. Tap "Get Started" → see your live balance and budget on the **Home** screen
-3. Tap **"Simulate Transaction"** → pick a spend (GrabFood, Shopee, etc.)
-3. Watch the **Smart Nudge** refresh with advice specific to that merchant + your current budget %
-4. Tap **"Save RM X to [goal]"** → the amount is deducted from your balance and added to the goal
-5. Navigate to **Goals** to see the goal's progress bar update
-6. Navigate to **Spending** to see the category spending update in real-time
-7. Navigate to **Debt Radar** → see BNPL risk level + advice
-8. Navigate to **Profile** → access Challenge leaderboard and Debt Radar
+1. Open the app → swipe through the **Animated Onboarding** screens to see the value prop.
+2. Tap "Get Started" → land on the **Home** dashboard.
+3. **The Smart Nudge Trap:**
+   - Tap **"Simulate Transaction"** and select **GrabFood**. Notice the friendly nudge telling you you're healthy and offering to auto-save RM 2 to your goals.
+   - Tap **"Simulate Transaction"** and select **Shopee**. Notice the AI immediately reacts to your category spending hitting 80%, changing its tone to warn you and suggesting you "redirect" that money instead.
+   - Tap **"Simulate Transaction"** and select **Shopee** AGAIN. The AI detects you've breached 100% of your Shopping budget and instantly throws a red **🚨 Budget Exceeded** alert, completely disabling the save button and forcing you to Review your Budget.
+4. Navigate to **Spending** to see the category spending rings update in real-time.
+5. Navigate to **Goals** → add a custom Emoji to your savings goal.
+6. Navigate to **Profile** → access the Challenge leaderboard and Debt Radar (BNPL risk calculator).
+7. Tap the **Log Out** button on the Profile screen to instantly loop back to the Onboarding welcome screen!
 
 ---
 

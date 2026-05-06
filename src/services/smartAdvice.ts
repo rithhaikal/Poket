@@ -5,10 +5,10 @@
 //  No API calls. Zero quota risk. Perfect for a hackathon prototype.
 // ─────────────────────────────────────────────────────────────
 
-// ─── Types ───
 export interface SmartNudge {
   message: string;
   actionLabel: string;
+  actionType?: "save" | "review";
 }
 
 export interface SpendingInsight {
@@ -61,6 +61,14 @@ export async function getSmartNudge(
   const cat = tx.category.toLowerCase();
   const pct = budgetUsedPercent;
 
+  if (pct >= 100) {
+    return {
+      message: `🚨 Budget Exceeded! RM ${tx.amount.toFixed(2)} at ${tx.merchant} pushed your ${cat} spending to ${pct}%. Please review your budget to get back on track.`,
+      actionLabel: `Review Budget`,
+      actionType: "review",
+    };
+  }
+
   if (cat === "food" || cat === "drinks") {
     if (pct >= 90) return {
       message: `RM ${tx.amount.toFixed(2)} at ${tx.merchant} pushed you to ${pct}% of your budget. Your wallet needs a breather — cook at home for the next few days and redirect that cash to ${goalName}.`,
@@ -80,10 +88,12 @@ export async function getSmartNudge(
     if (pct >= 80) return {
       message: `That RM ${tx.amount.toFixed(2)} ${tx.merchant} order nudged you to ${pct}% budget. Your ${goalName} is waiting — skip the next checkout and put RM ${save} there instead.`,
       actionLabel: `Redirect RM ${save}`,
+      actionType: "save",
     };
     return {
       message: `Online shopping adds up fast — RM ${tx.amount.toFixed(2)} at ${tx.merchant} today. You're at ${pct}% budget. Moving RM ${save} to ${goalName} now keeps your savings on track.`,
       actionLabel: `Save RM ${save}`,
+      actionType: "save",
     };
   }
 

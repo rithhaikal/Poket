@@ -1,4 +1,4 @@
-import { View, Text, ScrollView } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Flame, Sparkles } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { getStreakMotivation, StreakMotivation } from "../../services/smartAdvice";
 import { StreakDayCircle } from "../components/StreakDayCircle";
 import { TextShimmer } from "../components/TextShimmer";
+import { useAppContext } from "../../context/AppContext";
 
 const C = {
   card: "rgba(255, 255, 255, 0.075)",
@@ -19,9 +20,7 @@ const C = {
   border: "rgba(255,255,255,0.18)",
 };
 
-const currentStreak = 11;
 const personalBest = 21;
-const todayBudgetUsed = 67;
 
 const weekHistory = [
   { day: "S", done: true },
@@ -42,12 +41,21 @@ const weekHistory = [
 
 const todayIndex = 10;
 
-const budgetBarColor =
-  todayBudgetUsed < 70 ? C.primary : todayBudgetUsed < 90 ? C.amber : C.danger;
-
 export function StreakTracker() {
+  const { totalSpent, budgetLimit } = useAppContext();
   const [aiData, setAiData] = useState<StreakMotivation | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasRecovered, setHasRecovered] = useState(false);
+
+  // For the demo: totalSpent starts at 177.5. GrabFood (+32.5) -> 210. 
+  // Shopee 1 (+85) -> 295. Shopee 2 (+85) -> 380. 
+  // We want it to break on Shopee 2, so threshold is 300.
+  const isBroken = totalSpent > 300 && !hasRecovered;
+  const currentStreak = isBroken ? 0 : 11;
+  const todayBudgetUsed = isBroken ? 115 : 67;
+
+  const budgetBarColor =
+    todayBudgetUsed < 70 ? C.primary : todayBudgetUsed < 90 ? C.amber : C.danger;
 
   useEffect(() => {
     getStreakMotivation(currentStreak, personalBest)
@@ -63,9 +71,9 @@ export function StreakTracker() {
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>Stay within budget every day</Text>
 
           {/* Big streak display */}
-          <View style={{ backgroundColor: C.primarySoft, borderRadius: 24, padding: 28, alignItems: "center", marginBottom: 16 }}>
-            <Flame color={C.primary} size={36} />
-            <Text style={{ color: C.primary, fontSize: 60, fontWeight: "900", lineHeight: 72, marginTop: 8 }}>{currentStreak}</Text>
+          <View style={{ backgroundColor: isBroken ? C.card : C.primarySoft, borderRadius: 24, padding: 28, alignItems: "center", marginBottom: 16 }}>
+            <Flame color={isBroken ? C.textMuted : C.primary} size={36} />
+            <Text style={{ color: isBroken ? C.textMuted : C.primary, fontSize: 60, fontWeight: "900", lineHeight: 72, marginTop: 8 }}>{currentStreak}</Text>
             <Text style={{ color: "white", fontSize: 15, fontWeight: "700" }}>day streak</Text>
             <Text style={{ color: C.textMuted, fontSize: 12, marginTop: 4 }}>Personal best: {personalBest} days</Text>
           </View>
@@ -75,12 +83,12 @@ export function StreakTracker() {
             <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 14 }}>Last 14 days</Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 8 }}>
               {weekHistory.slice(0, 7).map((item, index) => (
-                <StreakDayCircle key={index} day={item.day} done={item.done} isToday={index === todayIndex} />
+                <StreakDayCircle key={index} day={item.day} done={index === todayIndex ? !isBroken : item.done} isToday={index === todayIndex} />
               ))}
             </View>
             <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
               {weekHistory.slice(7, 14).map((item, index) => (
-                <StreakDayCircle key={index + 7} day={item.day} done={item.done} isToday={(index + 7) === todayIndex} />
+                <StreakDayCircle key={index + 7} day={item.day} done={(index + 7) === todayIndex ? !isBroken : item.done} isToday={(index + 7) === todayIndex} />
               ))}
             </View>
           </View>
@@ -97,12 +105,30 @@ export function StreakTracker() {
           </View>
 
           {/* Recovery mode */}
-          <View style={{ backgroundColor: "rgba(246,166,35,0.08)", borderWidth: 1, borderColor: C.amber, borderRadius: 20, padding: 16, marginBottom: 16 }}>
-            <Text style={{ color: C.amber, fontWeight: "900", fontSize: 14, marginBottom: 6 }}>Recovery Mode</Text>
-            <Text style={{ color: C.textMuted, fontSize: 12, lineHeight: 18 }}>
-              If you miss a day, we don't reset right away. You get a 3-day recovery sprint with lighter targets to get back on track.
-            </Text>
-          </View>
+          {isBroken ? (
+            <View style={{ backgroundColor: "rgba(255,98,98,0.1)", borderWidth: 1, borderColor: C.danger, borderRadius: 20, padding: 16, marginBottom: 16 }}>
+              <Text style={{ color: C.danger, fontWeight: "900", fontSize: 14, marginBottom: 6 }}>Streak Frozen 🧊</Text>
+              <Text style={{ color: "white", fontSize: 12, lineHeight: 18, marginBottom: 12 }}>
+                You exceeded your daily budget. Your 11-day streak is frozen. Stay under a lighter Recovery Budget (RM 30/day) for the next 3 days to thaw your flame and get back on track!
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  Alert.alert("Recovery Sprint Activated!", "Your daily budget is temporarily lowered to RM 30. Complete 3 days of safe spending to restore your 11-day streak!");
+                  setHasRecovered(true);
+                }}
+                style={{ backgroundColor: C.danger, paddingVertical: 10, borderRadius: 12, alignItems: "center" }}
+              >
+                <Text style={{ color: "white", fontWeight: "900" }}>Start 3-Day Sprint</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={{ backgroundColor: "rgba(246,166,35,0.08)", borderWidth: 1, borderColor: C.amber, borderRadius: 20, padding: 16, marginBottom: 16 }}>
+              <Text style={{ color: C.amber, fontWeight: "900", fontSize: 14, marginBottom: 6 }}>Recovery Mode</Text>
+              <Text style={{ color: C.textMuted, fontSize: 12, lineHeight: 18 }}>
+                If you miss a day, we don't reset right away. You get a 3-day recovery sprint with lighter targets to get back on track.
+              </Text>
+            </View>
+          )}
 
           {/* AI Motivation */}
           <Text style={{ color: "white", fontWeight: "900", fontSize: 16, marginBottom: 12 }}>AI Motivation</Text>

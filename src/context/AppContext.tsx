@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, useMemo, ReactNode } from "react";
 
 // ─── Types ───
 export interface Transaction {
@@ -48,9 +48,9 @@ interface AppState {
 
 // ─── Default data ───
 const DEFAULT_TRANSACTIONS: Transaction[] = [
+  { id: "3", merchant: "Shopee", category: "Shopping", amount: 155.0, label: "S" },
   { id: "1", merchant: "Tealive", category: "Drinks", amount: 18.0, label: "T" },
   { id: "2", merchant: "RapidKL", category: "Transport", amount: 4.5, label: "R" },
-  { id: "3", merchant: "Shopee", category: "Shopping", amount: 85.0, label: "S" },
 ];
 
 const DEFAULT_GOALS: Goal[] = [
@@ -66,7 +66,7 @@ const DEFAULT_CATEGORY_BUDGETS: Record<string, number> = {
   "Food & drinks": 350,
   "Transport": 120,
   "Entertainment": 150,
-  "Shopping": 200,
+  "Shopping": 300,
   "Health": 100,
 };
 
@@ -85,22 +85,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const completeOnboarding = () => setIsOnboarded(true);
   const resetOnboarding = () => setIsOnboarded(false);
 
-  const categorySpending: CategorySpending[] = Object.keys(DEFAULT_CATEGORY_BUDGETS).map((catName) => {
-    // Map transaction categories to budget categories. e.g., "Food", "Drinks" -> "Food & drinks"
-    const spent = transactions
-      .filter((tx) => {
-        const tCat = tx.category.toLowerCase();
-        if (catName === "Food & drinks") return tCat === "food" || tCat === "drinks";
-        return tCat === catName.toLowerCase();
-      })
-      .reduce((sum, tx) => sum + tx.amount, 0);
+  const categorySpending: CategorySpending[] = useMemo(() => {
+    return Object.keys(DEFAULT_CATEGORY_BUDGETS).map((catName) => {
+      // Map transaction categories to budget categories. e.g., "Food", "Drinks" -> "Food & drinks"
+      const spent = transactions
+        .filter((tx) => {
+          const tCat = tx.category.toLowerCase();
+          if (catName === "Food & drinks") return tCat === "food" || tCat === "drinks";
+          return tCat === catName.toLowerCase();
+        })
+        .reduce((sum, tx) => sum + tx.amount, 0);
 
-    const budget = DEFAULT_CATEGORY_BUDGETS[catName];
-    const percentage = Math.min(100, Math.round((spent / budget) * 100));
-    const status = percentage >= 100 ? "over" : percentage >= 80 ? "warning" : "safe";
+      const budget = DEFAULT_CATEGORY_BUDGETS[catName];
+      const percentage = Math.min(100, Math.round((spent / budget) * 100));
+      const status = percentage >= 100 ? "over" : percentage >= 80 ? "warning" : "safe";
 
-    return { name: catName, spent, budget, percentage, status };
-  });
+      return { name: catName, spent, budget, percentage, status };
+    });
+  }, [transactions]);
 
   const addTransaction = (tx: Omit<Transaction, "id">) => {
     const newTx: Transaction = { ...tx, id: Date.now().toString() };

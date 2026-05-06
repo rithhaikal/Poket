@@ -32,7 +32,7 @@ const PRESETS = [
 
 export function Home() {
   const navigation = useNavigation<any>();
-  const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount } = useAppContext();
+  const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount, categorySpending } = useAppContext();
   const [nudge, setNudge] = useState<SmartNudge | null>(null);
   const [nudgeLoading, setNudgeLoading] = useState(true);
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
@@ -52,14 +52,25 @@ export function Home() {
     : undefined;
 
   // Fetch nudge — called on mount and when new transactions arrive
-  const fetchNudge = (txSnapshot: typeof transactions) => {
+  const fetchNudge = (txSnapshot: typeof transactions, categoryData: typeof categorySpending) => {
     setNudgeLoading(true);
     setNudge(null);
     setNudgeDismissed(false);
+
+    // Calculate the percentage of the specific category of the last transaction
+    const recentTx = txSnapshot[0];
+    const categoryInfo = categoryData.find((c: any) => {
+      const tCat = recentTx.category.toLowerCase();
+      if (c.name === "Food & drinks") return tCat === "food" || tCat === "drinks";
+      return c.name.toLowerCase() === tCat;
+    });
+    // Fallback to overall budget if category not found
+    const categoryPct = categoryInfo ? categoryInfo.percentage : Math.min(100, Math.round((totalSpent / budgetLimit) * 100));
+
     let cancelled = false;
     getSmartNudge(
       txSnapshot.slice(0, 3),
-      Math.min(100, Math.round((totalSpent / budgetLimit) * 100)),
+      categoryPct,
       savedAmount,
       topGoalForAI,
     ).then((result) => {
@@ -71,8 +82,10 @@ export function Home() {
   };
 
   useEffect(() => {
-    return fetchNudge(transactions);
-  }, [transactions]); // auto re-fetch when transactions change
+    if (transactions.length > 0) {
+      fetchNudge(transactions, categorySpending);
+    }
+  }, [transactions, categorySpending]); // auto re-fetch when transactions change
 
   const handleSimulate = (preset: typeof PRESETS[0]) => {
     addTransaction(preset);
@@ -81,6 +94,13 @@ export function Home() {
   };
 
   const handleSaveIt = () => {
+    setNudgeDismissed(true);
+
+    if (nudge?.actionType === "review") {
+      navigation.navigate("Spending");
+      return;
+    }
+
     const goalName = topGoal?.name ?? "your savings goal";
     const amountToSave = transactions.length > 0 ? Math.max(2, Math.round(transactions[0].amount * 0.08)) : 2;
     
@@ -89,7 +109,6 @@ export function Home() {
     }
     
     Alert.alert("Saved! 💚", `RM ${amountToSave.toFixed(2)} has been auto-saved to ${goalName}.\n\nSmall saves today build bigger freedom tomorrow.`);
-    setNudgeDismissed(true);
   };
 
   const handleSkip = () => {
