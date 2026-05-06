@@ -1,4 +1,5 @@
 import { View, Text, TouchableOpacity, ScrollView, Modal, Alert } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Bell, User, Lightbulb, TrendingUp, TrendingDown, Plus, X, AlertCircle } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -30,6 +31,7 @@ const PRESETS = [
 ];
 
 export function Home() {
+  const navigation = useNavigation<any>();
   const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount } = useAppContext();
   const [nudge, setNudge] = useState<SmartNudge | null>(null);
   const [nudgeLoading, setNudgeLoading] = useState(true);
@@ -114,14 +116,14 @@ export function Home() {
               <TouchableOpacity style={{ width: 42, height: 42, backgroundColor: "rgba(255,255,255,0.1)", borderWidth: 1, borderColor: C.border, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
                 <Bell color="#F4ECFF" size={19} />
               </TouchableOpacity>
-              <TouchableOpacity style={{ width: 42, height: 42, backgroundColor: C.primary, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
+              <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={{ width: 42, height: 42, backgroundColor: C.primary, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
                 <User color="#071009" size={19} />
               </TouchableOpacity>
             </View>
           </View>
 
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 2 }}>Good morning,</Text>
-          <Text style={{ color: "white", fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Amirah</Text>
+          <Text style={{ color: "white", fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Fakhrul</Text>
 
           {/* Balance */}
           <View style={{ backgroundColor: "rgba(255,255,255,0.105)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", borderRadius: 26, padding: 20, marginBottom: 16 }}>

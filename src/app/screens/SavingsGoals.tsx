@@ -13,7 +13,7 @@ const C = {
   textSoft: "#DCFBEF", amber: "#F6A623", border: "rgba(255,255,255,0.18)",
 };
 
-const EMOJIS = ["🌙", "🛡️", "✈️", "🏠", "🎓", "💍", "🚗", "💻", "🎸", "🌴", "👟", "🐕"];
+const EMOJIS = ["🌙", "🛡️", "✈️", "🏠", "🎓", "💍", "🚗", "💻", "🎸", "👟", "🐕"];
 
 const monthlyRoundUp = 42.80;
 
@@ -158,12 +158,37 @@ export function SavingsGoals() {
               </View>
 
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 8 }}>Pick an emoji</Text>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 18 }}>
+              <View style={{ flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 12, marginBottom: 18 }}>
                 {EMOJIS.map((e) => (
                   <TouchableOpacity key={e} onPress={() => setSelectedEmoji(e)} style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: selectedEmoji === e ? C.primarySoft : "rgba(255,255,255,0.06)", borderWidth: 1, borderColor: selectedEmoji === e ? C.primary : "transparent", alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 22 }}>{e}</Text>
+                    <Text style={{ fontSize: 22, textAlign: "center", includeFontPadding: false, lineHeight: 30 }}>{e}</Text>
                   </TouchableOpacity>
                 ))}
+                
+                {/* Custom Emoji Input */}
+                <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: !EMOJIS.includes(selectedEmoji) ? C.primarySoft : "rgba(255,255,255,0.06)", borderWidth: 1, borderColor: !EMOJIS.includes(selectedEmoji) ? C.primary : "transparent", alignItems: "center", justifyContent: "center", overflow: "hidden" }}>
+                  <TextInput
+                    value={!EMOJIS.includes(selectedEmoji) ? selectedEmoji : ""}
+                    onChangeText={(text) => {
+                      if (!text) {
+                        setSelectedEmoji("🎯");
+                        return;
+                      }
+                      // Extract only valid emojis from the typed text
+                      const emojisOnly = text.match(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu);
+                      if (emojisOnly && emojisOnly.length > 0) {
+                        setSelectedEmoji(emojisOnly[0]); // Keep only the first emoji
+                      }
+                    }}
+                    placeholder="+"
+                    placeholderTextColor={C.textMuted}
+                    maxLength={4} // Allow longer length temporarily to catch complex emojis before regex
+                    style={{ flex: 1, width: "100%", fontSize: 22, color: "white", textAlign: "center", textAlignVertical: "center", padding: 0, margin: 0 }}
+                    onFocus={() => {
+                      if (EMOJIS.includes(selectedEmoji)) setSelectedEmoji("");
+                    }}
+                  />
+                </View>
               </View>
 
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 6 }}>Goal name</Text>

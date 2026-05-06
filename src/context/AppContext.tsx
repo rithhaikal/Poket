@@ -37,6 +37,9 @@ interface AppState {
   totalSpent: number;
   budgetLimit: number;
   categorySpending: CategorySpending[];
+  isOnboarded: boolean;
+  completeOnboarding: () => void;
+  resetOnboarding: () => void;
   addTransaction: (tx: Omit<Transaction, "id">) => void;
   addGoal: (goal: Omit<Goal, "id" | "saved" | "status" | "autoSavePerDay">) => void;
   removeGoal: (id: string) => void;
@@ -74,9 +77,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [transactions, setTransactions] = useState<Transaction[]>(DEFAULT_TRANSACTIONS);
   const [goals, setGoals] = useState<Goal[]>(DEFAULT_GOALS);
   const [balance, setBalance] = useState(DEFAULT_BALANCE);
+  const [isOnboarded, setIsOnboarded] = useState(false);
   const [totalSpent, setTotalSpent] = useState(
     DEFAULT_TRANSACTIONS.reduce((sum, tx) => sum + tx.amount, 0)
   );
+
+  const completeOnboarding = () => setIsOnboarded(true);
+  const resetOnboarding = () => setIsOnboarded(false);
 
   const categorySpending: CategorySpending[] = Object.keys(DEFAULT_CATEGORY_BUDGETS).map((catName) => {
     // Map transaction categories to budget categories. e.g., "Food", "Drinks" -> "Food & drinks"
@@ -128,7 +135,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, addTransaction, addGoal, removeGoal, addSavedAmount }}>
+    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, isOnboarded, completeOnboarding, resetOnboarding, addTransaction, addGoal, removeGoal, addSavedAmount }}>
       {children}
     </AppContext.Provider>
   );

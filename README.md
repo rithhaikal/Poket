@@ -1,14 +1,14 @@
 # 🟢 Poket — Smart Savings by GXBank
 
-> A high-fidelity React Native prototype for a Gen Z-focused financial wellness app, built for a hackathon.
+> A modern, Gen Z-focused financial wellness app built for the GXBank Hackathon.
 
 ---
 
 ## 📱 What is Poket?
 
-**Poket** is a mobile-first personal finance assistant that helps young Malaysians build better saving habits through:
+**Poket** is a mobile-first personal finance assistant that helps young Malaysians build better saving habits through dynamic insights and gamification:
 
-- **AI Smart Nudge** — Contextual financial advice after every spend (reacts to the real merchant, category, and budget %)
+- **Smart Nudges** — Contextual financial advice after every spend
 - **Live Spending Tracker** — Simulated transactions update your budget and spending breakdown in real-time
 - **Savings Goals** — Create, track, and fund goals with one tap from the smart nudge
 - **Debt Radar** — BNPL risk assessment with a monthly commitment vs. income ratio calculator
@@ -26,7 +26,6 @@
 | Navigation | React Navigation (Bottom Tabs) |
 | Styling | Inline StyleSheet + expo-linear-gradient |
 | State | React Context API |
-| AI Advice | Smart computed responses (demo mode) |
 | Icons | lucide-react-native |
 
 ---
@@ -44,8 +43,6 @@ npx expo start
 #    OR press W to open in browser
 ```
 
-No `.env` file or API keys required — the app runs fully offline.
-
 ---
 
 ## 📂 Project Structure
@@ -57,11 +54,13 @@ src/
 │   │   ├── Layout.tsx      # Bottom tab navigator
 │   │   ├── TextShimmer.tsx # Loading animation
 │   │   ├── BNPLRow.tsx     # BNPL plan row card
+│   │   ├── Logo.tsx        # Custom SVG logo
 │   │   └── StreakDayCircle.tsx
 │   └── screens/
-│       ├── Home.tsx        # Dashboard + AI Smart Nudge + Transaction Simulator
+│       ├── Onboarding.tsx  # Animated welcome flow
+│       ├── Home.tsx        # Dashboard + Smart Nudge + Transaction Simulator
 │       ├── SpendingDNA.tsx # Live category spending breakdown
-│       ├── SavingsGoals.tsx# Goals CRUD + AI Savings Coach
+│       ├── SavingsGoals.tsx# Goals CRUD + Savings Coach
 │       ├── StreakTracker.tsx
 │       ├── DebtRadar.tsx   # BNPL risk calculator
 │       ├── Challenge.tsx   # National savings leaderboard
@@ -69,30 +68,23 @@ src/
 ├── context/
 │   └── AppContext.tsx      # Global state: transactions, goals, balance, categorySpending
 └── services/
-    └── smartAdvice.ts      # AI-style computed financial advice (no API needed)
+    └── smartAdvice.ts      # Computed financial advice engine
 ```
 
 ---
 
 ## ✨ Demo Flow
 
-1. Open the app → see your live balance and budget on the **Home** screen
-2. Tap **"Simulate Transaction"** → pick a spend (GrabFood, Shopee, etc.)
+1. Open the app → swipe through the **Onboarding** screens to see the value prop
+2. Tap "Get Started" → see your live balance and budget on the **Home** screen
+3. Tap **"Simulate Transaction"** → pick a spend (GrabFood, Shopee, etc.)
 3. Watch the **Smart Nudge** refresh with advice specific to that merchant + your current budget %
 4. Tap **"Save RM X to [goal]"** → the amount is deducted from your balance and added to the goal
 5. Navigate to **Goals** to see the goal's progress bar update
 6. Navigate to **Spending** to see the category spending update in real-time
-7. Navigate to **Debt Radar** → see BNPL risk level + AI advice
+7. Navigate to **Debt Radar** → see BNPL risk level + advice
 8. Navigate to **Profile** → access Challenge leaderboard and Debt Radar
 
 ---
 
-## 📝 Notes
-
-- This is a **high-fidelity prototype** — all data is in-memory and resets on reload
-- The "AI" advice is computed deterministically from real app state (merchant, budget %, goal name) — no API calls, no quota limits
-- Designed to match GXBank's dark-themed aesthetic
-
----
-
-*Built with ❤️ for hackathon*
+*Built with ❤️ for the GXBank Hackathon*

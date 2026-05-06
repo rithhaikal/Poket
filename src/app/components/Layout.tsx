@@ -1,4 +1,5 @@
 import { Text, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Flame, Home as HomeIcon, Target, TrendingUp, User as UserIcon } from "lucide-react-native";
 import { Home } from "../screens/Home";
@@ -21,6 +22,8 @@ const iconMap: Record<string, any> = {
 
 function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const visibleRoutes = state.routes.filter((route) => !["Challenge", "DebtRadar"].includes(route.name));
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, 16);
 
   return (
     <View
@@ -29,20 +32,21 @@ function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         left: 0,
         right: 0,
         bottom: 0,
-        height: 76,
+        height: 64 + bottomPadding,
         paddingTop: 8,
+        paddingBottom: bottomPadding,
         paddingHorizontal: 10,
         backgroundColor: "#080111",
         borderTopWidth: 1,
         borderTopColor: "rgba(255, 255, 255, 0.08)",
         flexDirection: "row",
-        alignItems: "flex-start",
+        alignItems: "center",
       }}
     >
       {visibleRoutes.map((route) => {
         const currentRouteName = state.routes[state.index]?.name;
         const routeIndex = state.routes.findIndex((item) => item.key === route.key);
-        const isFocused = state.index === routeIndex || (currentRouteName === "Challenge" && route.name === "Profile");
+        const isFocused = state.index === routeIndex || (["Challenge", "DebtRadar"].includes(currentRouteName) && route.name === "Profile");
         const options = descriptors[route.key]?.options ?? {};
         const label = typeof options.tabBarLabel === "string" ? options.tabBarLabel : route.name;
         const Icon = iconMap[route.name] ?? HomeIcon;
@@ -54,7 +58,7 @@ function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
+          if (currentRouteName !== route.name && !event.defaultPrevented) {
             navigation.navigate(route.name);
           }
         };
@@ -77,12 +81,13 @@ function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               style={{
                 width: 36,
                 height: 30,
-                borderRadius: 16,
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: isFocused ? "rgba(32, 230, 156, 0.14)" : "transparent",
               }}
             >
+              {isFocused && (
+                <View style={{ position: "absolute", top: -8, width: 40, height: 3, backgroundColor: "#20E69C", borderRadius: 2 }} />
+              )}
               <Icon
                 color={isFocused ? "#20E69C" : "#A89AB8"}
                 size={22}

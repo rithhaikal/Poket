@@ -3,6 +3,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Shield, Trophy, ChevronRight, LogOut } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
+import { useAppContext } from "../../context/AppContext";
 
 const C = {
   card: "rgba(255, 255, 255, 0.075)",
@@ -27,8 +28,8 @@ type TabParamList = {
 };
 
 const user = {
-  name: "Amirah Nadia",
-  initials: "AN",
+  name: "Fakhrul Mustaqim",
+  initials: "FM",
   university: "Universiti Teknologi Malaysia",
   joinDate: "March 2026",
   gxbankTier: "GXBank Young Saver",
@@ -54,6 +55,18 @@ const menuItems: MenuItem[] = [
 
 export function Profile() {
   const navigation = useNavigation<NavigationProp<TabParamList>>();
+  const { goals, transactions, budgetLimit, resetOnboarding } = useAppContext();
+
+  const totalSaved = goals.reduce((sum, g) => sum + g.saved, 0);
+  const totalSpentThisMonth = transactions.reduce((sum, tx) => sum + tx.amount, 0);
+  const budgetMetPct = Math.round(Math.max(0, 100 - (totalSpentThisMonth / budgetLimit) * 100));
+
+  const stats = [
+    { label: "Total saved", value: `RM ${totalSaved.toFixed(0)}`, color: C.primary },
+    { label: "Best streak", value: "21 days", color: C.primary },
+    { label: "Budget met", value: `${budgetMetPct}%`, color: C.amber },
+    { label: "Active BNPL", value: "3 plans", color: C.danger },
+  ];
 
   const handleLogout = () => {
     Alert.alert(
@@ -61,7 +74,7 @@ export function Profile() {
       "Are you sure you want to log out?",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Yes, log out", style: "destructive", onPress: () => {} },
+        { text: "Yes, log out", style: "destructive", onPress: () => resetOnboarding() },
       ],
     );
   };

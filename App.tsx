@@ -3,14 +3,25 @@ import { NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Layout } from "./src/app/components/Layout";
 import { AppProvider } from "./src/context/AppContext";
+import { Onboarding } from "./src/app/screens/Onboarding";
+import { useAppContext } from "./src/context/AppContext";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+
+function RootNavigator() {
+  const { isOnboarded, completeOnboarding } = useAppContext();
+  if (!isOnboarded) return <Onboarding onComplete={completeOnboarding} />;
+  return <Layout />;
+}
 
 export default function App() {
   return (
-    <AppProvider>
-      <NavigationContainer>
-        <StatusBar style="light" translucent backgroundColor="transparent" />
-        <Layout />
-      </NavigationContainer>
-    </AppProvider>
+    <SafeAreaProvider>
+      <AppProvider>
+        <NavigationContainer>
+          <StatusBar style="light" translucent backgroundColor="transparent" />
+          <RootNavigator />
+        </NavigationContainer>
+      </AppProvider>
+    </SafeAreaProvider>
   );
 }
