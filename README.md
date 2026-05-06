@@ -82,12 +82,12 @@ src/
    - Tap **"Simulate Transaction"** and select **Shopee**. Notice the AI immediately reacts to your category spending hitting 80%, changing its tone to warn you and suggesting you "redirect" that money instead.
    - Tap **"Simulate Transaction"** and select **Shopee** AGAIN. The AI detects you've breached 100% of your Shopping budget and instantly throws a red **🚨 Budget Exceeded** alert, completely disabling the save button and forcing you to Review your Budget.
 4. On the **Spending** page, show how the category spending rings have updated in real-time.
-5. Navigate to **Goals** → show the UI and add a new goal using the custom Emoji keyboard filter.
+5. Navigate to **Goals** → showcase the round-up savings engine, AI-generated savings insights, and add a new savings goal using the predefined emoji selector.
 6. **The Gamified Streak Recovery:**
    - Navigate to the **Streak** tab.
    - Show how the gamification engine reacted to your overspending: your 11-day streak is frozen, the flame is dead, and the red **Streak Frozen** penalty box has appeared.
    - Tap **"Start 3-Day Sprint"** to simulate successfully passing the recovery mode. Watch the 11-day streak instantly restore!
-7. Navigate to **Profile** → show your live "Top 4% National" rank badge.
+7. Navigate to **Profile** → showcase the user's financial overview, behavioral statistics, and quick-access navigation system.
 8. From the Profile, navigate to **Debt Radar** → explain the BNPL risk calculator and how it protects Gen-Z credit scores.
 9. From the Profile, navigate to the **Challenge** leaderboard → show the national university rankings and gamified milestones.
 10. Finally, tap **Log Out** on the Profile screen to instantly loop back to the beautiful Onboarding screen.
