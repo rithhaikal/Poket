@@ -1,6 +1,6 @@
 import { Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { BottomTabBarProps, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createMaterialTopTabNavigator, MaterialTopTabBarProps } from "@react-navigation/material-top-tabs";
 import { Flame, Home as HomeIcon, Target, TrendingUp, User as UserIcon } from "lucide-react-native";
 import { Home } from "../screens/Home";
 import { SpendingDNA } from "../screens/SpendingDNA";
@@ -10,7 +10,7 @@ import { Challenge } from "../screens/Challenge";
 import { Profile } from "../screens/Profile";
 import { DebtRadar } from "../screens/DebtRadar";
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialTopTabNavigator();
 
 const iconMap: Record<string, any> = {
   Home: HomeIcon,
@@ -20,7 +20,7 @@ const iconMap: Record<string, any> = {
   Profile: UserIcon,
 };
 
-function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
+function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps) {
   const visibleRoutes = state.routes.filter((route) => !["Challenge", "DebtRadar"].includes(route.name));
   const insets = useSafeAreaInsets();
   const bottomPadding = Math.max(insets.bottom, 16);
@@ -117,9 +117,11 @@ function PoketTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 export function Layout() {
   return (
     <Tab.Navigator
+      tabBarPosition="bottom"
       tabBar={(props) => <PoketTabBar {...props} />}
       screenOptions={{
-        headerShown: false,
+        swipeEnabled: false,
+        animationEnabled: true,
         sceneStyle: { backgroundColor: "#080111" },
       }}
     >
