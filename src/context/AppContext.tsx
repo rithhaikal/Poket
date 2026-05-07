@@ -38,12 +38,22 @@ interface AppState {
   budgetLimit: number;
   categorySpending: CategorySpending[];
   isOnboarded: boolean;
+  energy: number;
+  unlockedAuras: string[];
+  equippedAura: string;
+  // New confetti state and actions
+  showConfetti: boolean;
+  triggerConfetti: () => void;
+  resetConfetti: () => void;
   completeOnboarding: () => void;
   resetOnboarding: () => void;
   addTransaction: (tx: Omit<Transaction, "id">) => void;
   addGoal: (goal: Omit<Goal, "id" | "saved" | "status" | "autoSavePerDay">) => void;
   removeGoal: (id: string) => void;
   addSavedAmount: (id: string, amount: number) => void;
+  earnEnergy: (amount: number) => void;
+  unlockAura: (id: string, price: number) => boolean;
+  equipAura: (id: string) => void;
 }
 
 // ─── Default data ───
@@ -78,6 +88,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [goals, setGoals] = useState<Goal[]>(DEFAULT_GOALS);
   const [balance, setBalance] = useState(DEFAULT_BALANCE);
   const [isOnboarded, setIsOnboarded] = useState(false);
+  const [energy, setEnergy] = useState(120);
+  const [unlockedAuras, setUnlockedAuras] = useState<string[]>(["origin"]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const triggerConfetti = () => setShowConfetti(true);
+  const resetConfetti = () => setShowConfetti(false);
+
+  const [equippedAura, setEquippedAura] = useState("origin");
   const [totalSpent, setTotalSpent] = useState(
     DEFAULT_TRANSACTIONS.reduce((sum, tx) => sum + tx.amount, 0)
   );
@@ -136,8 +153,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
     setBalance((prev) => Math.max(0, parseFloat((prev - amount).toFixed(2))));
   };
 
+  const earnEnergy = (amount: number) => {
+    setEnergy((prev) => prev + amount);
+  };
+
+  const unlockAura = (id: string, price: number) => {
+    if (energy >= price) {
+      setEnergy((prev) => prev - price);
+      setUnlockedAuras((prev) => [...prev, id]);
+      return true;
+    }
+    return false;
+  };
+
+  const equipAura = (id: string) => {
+    if (unlockedAuras.includes(id)) {
+      setEquippedAura(id);
+    }
+  };
+
   return (
-    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, isOnboarded, completeOnboarding, resetOnboarding, addTransaction, addGoal, removeGoal, addSavedAmount }}>
+    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, isOnboarded, energy, unlockedAuras, equippedAura, showConfetti, triggerConfetti, resetConfetti, completeOnboarding, resetOnboarding, addTransaction, addGoal, removeGoal, addSavedAmount, earnEnergy, unlockAura, equipAura }}>
       {children}
     </AppContext.Provider>
   );

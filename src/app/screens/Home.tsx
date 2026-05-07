@@ -1,13 +1,14 @@
 import { View, Text, TouchableOpacity, ScrollView, Modal, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Bell, User, Lightbulb, TrendingUp, TrendingDown, Plus, X, AlertCircle } from "lucide-react-native";
+import { Bell, User, Lightbulb, TrendingUp, TrendingDown, Plus, X, AlertCircle, Zap } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useEffect } from "react";
 import { getSmartNudge, SmartNudge } from "../../services/smartAdvice";
 import { TextShimmer } from "../components/TextShimmer";
 import { useAppContext } from "../../context/AppContext";
 import { Logo } from "../components/Logo";
+import { AuraCore, AuraType, AURA_CONFIG } from "../components/AuraCore";
 
 const C = {
   bg: "#0B0813", card: "rgba(255,255,255,0.075)", cardSoft: "rgba(255,255,255,0.065)",
@@ -30,9 +31,15 @@ const PRESETS = [
   { merchant: "Lazada", category: "Shopping", amount: 55.0, label: "L" },
 ];
 
+function getLevel(energy: number) { return Math.floor(energy / 100) + 1; }
+function getLevelProgress(energy: number) { return energy % 100; }
+
 export function Home() {
   const navigation = useNavigation<any>();
-  const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount, categorySpending } = useAppContext();
+  const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount, categorySpending, energy, equippedAura } = useAppContext();
+  const level = getLevel(energy);
+  const levelProgress = getLevelProgress(energy);
+  const auraCfg = AURA_CONFIG[equippedAura as AuraType] ?? AURA_CONFIG.origin;
   const [nudge, setNudge] = useState<SmartNudge | null>(null);
   const [nudgeLoading, setNudgeLoading] = useState(true);
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
@@ -145,7 +152,7 @@ export function Home() {
           <Text style={{ color: "white", fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Fakhrul</Text>
 
           {/* Balance */}
-          <View style={{ backgroundColor: "rgba(255,255,255,0.105)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", borderRadius: 26, padding: 20, marginBottom: 16 }}>
+          <View style={{ backgroundColor: "rgba(255,255,255,0.105)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", borderRadius: 26, padding: 20, marginBottom: 12 }}>
             <Text style={{ color: C.textSoft, fontSize: 12, marginBottom: 8 }}>Available balance · GXBank Savings</Text>
             <Text style={{ color: "white", fontSize: 36, fontWeight: "900", marginBottom: 8 }}>RM {balance.toFixed(2)}</Text>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
@@ -153,6 +160,55 @@ export function Home() {
               <Text style={{ color: "#DED6FF", fontSize: 12, fontWeight: "800" }}>Live balance</Text>
             </View>
           </View>
+
+          {/* ── Aura Status Widget ── */}
+          <TouchableOpacity
+            activeOpacity={0.88}
+            onPress={() => navigation.navigate("Profile" as any)}
+            style={{
+              borderRadius: 24,
+              borderWidth: 1.5,
+              borderColor: auraCfg.glow,
+              overflow: "hidden",
+              marginBottom: 16,
+            }}
+          >
+            <LinearGradient
+              colors={["rgba(25,10,55,0.97)", "rgba(11,8,19,0.97)"]}
+              style={{ flexDirection: "row", alignItems: "center", padding: 14, gap: 14 }}
+            >
+              {/* Mini animated orb */}
+              <View style={{ width: 56, height: 56, alignItems: "center", justifyContent: "center" }}>
+                <AuraCore type={equippedAura as AuraType} size={44} animated />
+              </View>
+
+              {/* Info */}
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                  <Text style={{ color: "white", fontWeight: "900", fontSize: 14 }}>{auraCfg.name}</Text>
+                  <View style={{ backgroundColor: C.primarySoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 }}>
+                    <Text style={{ color: C.primary, fontSize: 10, fontWeight: "900" }}>LVL {level}</Text>
+                  </View>
+                </View>
+                {/* XP bar */}
+                <View style={{ height: 5, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 999, overflow: "hidden", marginBottom: 4 }}>
+                  <LinearGradient
+                    colors={auraCfg.colors}
+                    start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
+                    style={{ width: `${levelProgress}%`, height: "100%", borderRadius: 999 }}
+                  />
+                </View>
+                <Text style={{ color: "#7A6E92", fontSize: 10 }}>{levelProgress}/100 XP · {100 - levelProgress} to next level</Text>
+              </View>
+
+              {/* Sparks badge */}
+              <View style={{ alignItems: "center", gap: 2 }}>
+                <Zap color={C.primary} size={16} fill={C.primary} />
+                <Text style={{ color: "white", fontWeight: "900", fontSize: 14 }}>{energy}</Text>
+                <Text style={{ color: "#7A6E92", fontSize: 9 }}>Sparks</Text>
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
 
           {/* Stats — computed from REAL transaction data */}
           <View style={{ flexDirection: "row", gap: 12, marginBottom: 20 }}>
