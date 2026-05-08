@@ -9,12 +9,7 @@ import { TextShimmer } from "../components/TextShimmer";
 import { useAppContext } from "../../context/AppContext";
 import { Logo } from "../components/Logo";
 import { AuraCore, AuraType, AURA_CONFIG } from "../components/AuraCore";
-
-const C = {
-  bg: "#0B0813", card: "rgba(255,255,255,0.075)", cardSoft: "rgba(255,255,255,0.065)",
-  primary: "#7136FD", primarySoft: "rgba(113, 54, 253, 0.15)", textMuted: "#BEB3CB",
-  textSoft: "#DED6FF", amber: "#F6A623", danger: "#FF6262", border: "rgba(255,255,255,0.14)",
-};
+import { useTheme } from "../../theme";
 
 const PRESETS = [
   { merchant: "Tealive", category: "Drinks", amount: 18.0, label: "T" },
@@ -36,6 +31,7 @@ function getLevelProgress(energy: number) { return energy % 100; }
 
 export function Home() {
   const navigation = useNavigation<any>();
+  const C = useTheme();
   const { transactions, balance, totalSpent, budgetLimit, addTransaction, goals, addSavedAmount, categorySpending, energy, equippedAura } = useAppContext();
   const level = getLevel(energy);
   const levelProgress = getLevelProgress(energy);
@@ -123,7 +119,7 @@ export function Home() {
   };
 
   return (
-    <LinearGradient colors={["#3E0D6F", "#1C0B35", "#0B0813", C.bg]} locations={[0, 0.15, 0.45, 0.92]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <LinearGradient colors={C.gradientColors as any} locations={C.gradientLocations as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }} edges={["top", "left", "right"]}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
 
@@ -134,13 +130,13 @@ export function Home() {
                 <Logo width={34} height={34} />
               </View>
               <View>
-                <Text style={{ color: "white", fontWeight: "900", fontSize: 15 }}>Poket</Text>
-                <Text style={{ color: "#D1C4FF", fontSize: 10, fontWeight: "700" }}>Powered by GXBank</Text>
+                <Text style={{ color: C.text, fontWeight: "900", fontSize: 15 }}>Poket</Text>
+                <Text style={{ color: C.textMuted, fontSize: 10, fontWeight: "700" }}>Powered by GXBank</Text>
               </View>
             </View>
             <View style={{ flexDirection: "row", gap: 10 }}>
-              <TouchableOpacity style={{ width: 42, height: 42, backgroundColor: "rgba(255,255,255,0.1)", borderWidth: 1, borderColor: C.border, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
-                <Bell color="#F4ECFF" size={19} />
+              <TouchableOpacity style={{ width: 42, height: 42, backgroundColor: C.cardSoft, borderWidth: 1, borderColor: C.border, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
+                <Bell color={C.text} size={19} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => navigation.navigate("Profile")} style={{ width: 42, height: 42, backgroundColor: C.primary, borderRadius: 21, alignItems: "center", justifyContent: "center" }}>
                 <User color="white" size={19} />
@@ -149,12 +145,12 @@ export function Home() {
           </View>
 
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 2 }}>Good morning,</Text>
-          <Text style={{ color: "white", fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Fakhrul</Text>
+          <Text style={{ color: C.text, fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Fakhrul</Text>
 
           {/* Balance */}
-          <View style={{ backgroundColor: "rgba(255,255,255,0.105)", borderWidth: 1, borderColor: "rgba(255,255,255,0.22)", borderRadius: 26, padding: 20, marginBottom: 12 }}>
+          <View style={{ backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 26, padding: 20, marginBottom: 12 }}>
             <Text style={{ color: C.textSoft, fontSize: 12, marginBottom: 8 }}>Available balance · GXBank Savings</Text>
-            <Text style={{ color: "white", fontSize: 36, fontWeight: "900", marginBottom: 8 }}>RM {balance.toFixed(2)}</Text>
+            <Text style={{ color: C.text, fontSize: 36, fontWeight: "900", marginBottom: 8 }}>RM {balance.toFixed(2)}</Text>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
               <View style={{ width: 7, height: 7, backgroundColor: C.primary, borderRadius: 4 }} />
               <Text style={{ color: "#DED6FF", fontSize: 12, fontWeight: "800" }}>Live balance</Text>
@@ -174,7 +170,7 @@ export function Home() {
             }}
           >
             <LinearGradient
-              colors={["rgba(25,10,55,0.97)", "rgba(11,8,19,0.97)"]}
+              colors={[C.card, C.cardSoft]}
               style={{ flexDirection: "row", alignItems: "center", padding: 14, gap: 14 }}
             >
               {/* Mini animated orb */}
@@ -185,13 +181,13 @@ export function Home() {
               {/* Info */}
               <View style={{ flex: 1 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 14 }}>{auraCfg.name}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 14 }}>{auraCfg.name}</Text>
                   <View style={{ backgroundColor: C.primarySoft, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 }}>
                     <Text style={{ color: C.primary, fontSize: 10, fontWeight: "900" }}>LVL {level}</Text>
                   </View>
                 </View>
                 {/* XP bar */}
-                <View style={{ height: 5, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 999, overflow: "hidden", marginBottom: 4 }}>
+                <View style={{ height: 5, backgroundColor: C.borderSoft, borderRadius: 999, overflow: "hidden", marginBottom: 4 }}>
                   <LinearGradient
                     colors={auraCfg.colors}
                     start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
@@ -204,7 +200,7 @@ export function Home() {
               {/* Sparks badge */}
               <View style={{ alignItems: "center", gap: 2 }}>
                 <Zap color={C.primary} size={16} fill={C.primary} />
-                <Text style={{ color: "white", fontWeight: "900", fontSize: 14 }}>{energy}</Text>
+                <Text style={{ color: C.text, fontWeight: "900", fontSize: 14 }}>{energy}</Text>
                 <Text style={{ color: "#7A6E92", fontSize: 9 }}>Sparks</Text>
               </View>
             </LinearGradient>
@@ -218,7 +214,7 @@ export function Home() {
                 <Text style={{ color: C.primary, fontWeight: "900", fontSize: 11 }}>+12%</Text>
               </View>
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>Saved this month</Text>
-              <Text style={{ color: "white", fontWeight: "900", fontSize: 18 }}>RM {savedAmount}</Text>
+              <Text style={{ color: C.text, fontWeight: "900", fontSize: 18 }}>RM {savedAmount}</Text>
             </View>
             <View style={{ flex: 1, backgroundColor: C.cardSoft, borderWidth: 1, borderColor: C.border, borderRadius: 24, padding: 16 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8 }}>
@@ -226,7 +222,7 @@ export function Home() {
                 <Text style={{ color: budgetUsedPct >= 80 ? C.danger : C.amber, fontWeight: "900", fontSize: 11 }}>{budgetUsedPct}%</Text>
               </View>
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>Budget used</Text>
-              <Text style={{ color: "white", fontWeight: "900", fontSize: 18 }}>RM {totalSpent.toFixed(0)}</Text>
+              <Text style={{ color: C.text, fontWeight: "900", fontSize: 18 }}>RM {totalSpent.toFixed(0)}</Text>
             </View>
           </View>
 
@@ -264,7 +260,7 @@ export function Home() {
                     {nudgeLoading && <Text style={{ color: C.textMuted, fontSize: 10 }}>Analysing your spend...</Text>}
                   </View>
                   {nudgeLoading ? <TextShimmer lines={3} /> : (
-                    <Text style={{ color: "white", fontSize: 13, lineHeight: 20 }}>{nudge?.message}</Text>
+                    <Text style={{ color: C.text, fontSize: 13, lineHeight: 20 }}>{nudge?.message}</Text>
                   )}
                 </View>
               </View>
@@ -288,7 +284,7 @@ export function Home() {
 
           {/* Transactions */}
           <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-            <Text style={{ color: "white", fontWeight: "900", fontSize: 18 }}>Recent transactions</Text>
+            <Text style={{ color: C.text, fontWeight: "900", fontSize: 18 }}>Recent transactions</Text>
             <TouchableOpacity onPress={() => setShowSimulator(true)} style={{ flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 6 }}>
               <Plus color={C.primary} size={14} />
               <Text style={{ color: C.primary, fontSize: 12, fontWeight: "900" }}>Simulate</Text>
@@ -302,8 +298,8 @@ export function Home() {
                   <Text style={{ color: C.primary, fontSize: 14, fontWeight: "900" }}>{tx.label}</Text>
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "white", fontWeight: "900", marginBottom: 4 }}>{tx.merchant}</Text>
-                  <View style={{ alignSelf: "flex-start", paddingHorizontal: 8, paddingVertical: 3, backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 20 }}>
+                  <Text style={{ color: C.text, fontWeight: "900", marginBottom: 4 }}>{tx.merchant}</Text>
+                  <View style={{ alignSelf: "flex-start", paddingHorizontal: 8, paddingVertical: 3, backgroundColor: C.cardSoft, borderRadius: 20 }}>
                     <Text style={{ color: C.textMuted, fontSize: 11 }}>{tx.category}</Text>
                   </View>
                 </View>
@@ -318,7 +314,7 @@ export function Home() {
           <TouchableOpacity style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }} activeOpacity={1} onPress={() => setShowSimulator(false)} />
           <View style={{ backgroundColor: "#10092A", borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 48, borderTopWidth: 1, borderTopColor: C.border }}>
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-              <Text style={{ color: "white", fontSize: 20, fontWeight: "900" }}>Simulate Transaction</Text>
+              <Text style={{ color: C.text, fontSize: 20, fontWeight: "900" }}>Simulate Transaction</Text>
               <TouchableOpacity onPress={() => setShowSimulator(false)} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center" }}>
                 <X color={C.textMuted} size={18} />
               </TouchableOpacity>
@@ -333,7 +329,7 @@ export function Home() {
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {PRESETS.map((p) => (
                 <TouchableOpacity key={p.merchant} onPress={() => handleSimulate(p)} style={{ backgroundColor: C.cardSoft, borderWidth: 1, borderColor: C.border, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10, minWidth: "30%", flex: 1, alignItems: "center" }}>
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 12 }}>{p.merchant}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 12 }}>{p.merchant}</Text>
                   <Text style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>RM {p.amount.toFixed(2)}</Text>
                 </TouchableOpacity>
               ))}

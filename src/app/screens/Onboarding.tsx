@@ -4,17 +4,9 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useState, useRef } from "react";
 import { Logo } from "../components/Logo";
 import { Lightbulb, Target, Flame, Shield, ChevronRight, Sparkles, Heart } from "lucide-react-native";
+import { useTheme } from "../../theme";
 
 const { width } = Dimensions.get("window");
-
-const C = {
-  primary: "#7136FD",
-  primarySoft: "rgba(113, 54, 253, 0.15)",
-  card: "rgba(255,255,255,0.075)",
-  border: "rgba(255,255,255,0.18)",
-  textMuted: "#BEB3CB",
-  textSoft: "#DED6FF",
-};
 
 const FEATURES = [
   { Icon: Lightbulb, title: "Smart Nudges", desc: "AI advice personalised to every spend" },
@@ -23,13 +15,13 @@ const FEATURES = [
   { Icon: Shield, title: "Debt Radar", desc: "BNPL risk tracking before it's a problem" },
 ];
 
-function Slide1() {
+function Slide1({ C }: { C: any }) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
       <View style={{ width: 100, height: 100, borderRadius: 28, backgroundColor: C.primarySoft, borderWidth: 1, borderColor: C.primary, alignItems: "center", justifyContent: "center", marginBottom: 36 }}>
         <Logo width={62} height={62} />
       </View>
-      <Text style={{ color: "white", fontSize: 40, fontWeight: "900", textAlign: "center", letterSpacing: -1.5, lineHeight: 46, marginBottom: 16 }}>
+      <Text style={{ color: C.text, fontSize: 40, fontWeight: "900", textAlign: "center", letterSpacing: -1.5, lineHeight: 46, marginBottom: 16 }}>
         {"Meet\nPoket."}
       </Text>
       <Text style={{ color: C.textSoft, fontSize: 16, textAlign: "center", lineHeight: 26, marginBottom: 36 }}>
@@ -43,10 +35,10 @@ function Slide1() {
   );
 }
 
-function Slide2() {
+function Slide2({ C }: { C: any }) {
   return (
     <View style={{ flex: 1, paddingHorizontal: 24, justifyContent: "center" }}>
-      <Text style={{ color: "white", fontSize: 30, fontWeight: "900", textAlign: "center", letterSpacing: -0.5, marginBottom: 6 }}>
+      <Text style={{ color: C.text, fontSize: 30, fontWeight: "900", textAlign: "center", letterSpacing: -0.5, marginBottom: 6 }}>
         Everything you need
       </Text>
       <Text style={{ color: C.textSoft, fontSize: 15, textAlign: "center", marginBottom: 28 }}>
@@ -59,7 +51,7 @@ function Slide2() {
               <feat.Icon color={C.primary} size={20} />
             </View>
             <View style={{ flex: 1 }}>
-              <Text style={{ color: "white", fontWeight: "900", fontSize: 14, marginBottom: 2 }}>{feat.title}</Text>
+              <Text style={{ color: C.text, fontWeight: "900", fontSize: 14, marginBottom: 2 }}>{feat.title}</Text>
               <Text style={{ color: C.textMuted, fontSize: 12 }}>{feat.desc}</Text>
             </View>
           </View>
@@ -69,13 +61,13 @@ function Slide2() {
   );
 }
 
-function Slide3({ onStart }: { onStart: () => void }) {
+function Slide3({ onStart, C }: { onStart: () => void; C: any }) {
   return (
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
       <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: C.primarySoft, borderWidth: 1, borderColor: C.primary, alignItems: "center", justifyContent: "center", marginBottom: 28 }}>
         <Heart color={C.primary} size={36} fill={C.primary} />
       </View>
-      <Text style={{ color: "white", fontSize: 36, fontWeight: "900", textAlign: "center", letterSpacing: -1, lineHeight: 42, marginBottom: 16 }}>
+      <Text style={{ color: C.text, fontSize: 36, fontWeight: "900", textAlign: "center", letterSpacing: -1, lineHeight: 42, marginBottom: 16 }}>
         {"Your financial\nfreedom\nstarts here."}
       </Text>
       <Text style={{ color: C.textSoft, fontSize: 15, textAlign: "center", lineHeight: 24, marginBottom: 48 }}>
@@ -94,6 +86,7 @@ function Slide3({ onStart }: { onStart: () => void }) {
 }
 
 export function Onboarding({ onComplete }: { onComplete: () => void }) {
+  const C = useTheme();
   const [activeIndex, setActiveIndex] = useState(0);
   const activeIndexRef = useRef(0);
   const slideAnim = useRef(new Animated.Value(0)).current;
@@ -130,8 +123,8 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
 
   return (
     <LinearGradient
-      colors={["#3E0D6F", "#1C0B35", "#0B0813", "#0B0813"]}
-      locations={[0, 0.15, 0.45, 0.92]}
+      colors={C.gradientColors as any}
+      locations={C.gradientLocations as any}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}
@@ -143,9 +136,9 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
           <Animated.View
             style={{ flexDirection: "row", width: width * 3, flex: 1, transform: [{ translateX: slideAnim }] }}
           >
-            <View style={{ width, flex: 1 }}><Slide1 /></View>
-            <View style={{ width, flex: 1 }}><Slide2 /></View>
-            <View style={{ width, flex: 1 }}><Slide3 onStart={onComplete} /></View>
+            <View style={{ width, flex: 1 }}><Slide1 C={C} /></View>
+            <View style={{ width, flex: 1 }}><Slide2 C={C} /></View>
+            <View style={{ width, flex: 1 }}><Slide3 onStart={onComplete} C={C} /></View>
           </Animated.View>
         </View>
 
@@ -158,7 +151,7 @@ export function Onboarding({ onComplete }: { onComplete: () => void }) {
                 onPress={() => goTo(i)}
                 hitSlop={{ top: 14, bottom: 14, left: 10, right: 10 }}
               >
-                <View style={{ width: i === activeIndex ? 28 : 8, height: 8, borderRadius: 4, backgroundColor: i === activeIndex ? C.primary : "rgba(255,255,255,0.22)" }} />
+                <View style={{ width: i === activeIndex ? 28 : 8, height: 8, borderRadius: 4, backgroundColor: i === activeIndex ? C.primary : C.card }} />
               </TouchableOpacity>
             ))}
           </View>

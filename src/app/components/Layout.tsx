@@ -9,6 +9,7 @@ import { StreakTracker } from "../screens/StreakTracker";
 import { Challenge } from "../screens/Challenge";
 import { Profile } from "../screens/Profile";
 import { DebtRadar } from "../screens/DebtRadar";
+import { useTheme } from "../../theme";
 
 const Tab = createMaterialTopTabNavigator();
 
@@ -21,6 +22,7 @@ const iconMap: Record<string, any> = {
 };
 
 function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps) {
+  const C = useTheme();
   const visibleRoutes = state.routes.filter((route) => !["Challenge", "DebtRadar"].includes(route.name));
   const insets = useSafeAreaInsets();
   const bottomPadding = Math.max(insets.bottom, 16);
@@ -36,9 +38,9 @@ function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps)
         paddingTop: 8,
         paddingBottom: bottomPadding,
         paddingHorizontal: 10,
-        backgroundColor: "#0B0813",
+        backgroundColor: C.navBg,
         borderTopWidth: 1,
-        borderTopColor: "rgba(255, 255, 255, 0.08)",
+        borderTopColor: C.borderSoft,
         flexDirection: "row",
         alignItems: "center",
       }}
@@ -89,7 +91,7 @@ function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps)
                 <View style={{ position: "absolute", top: -8, width: 40, height: 3, backgroundColor: "#7136FD", borderRadius: 2 }} />
               )}
               <Icon
-                color={isFocused ? "#7136FD" : "#A89AB8"}
+                color={isFocused ? C.tabIndicator : C.tabInactive}
                 size={22}
                 strokeWidth={isFocused ? 2.8 : 2.2}
               />
@@ -97,7 +99,7 @@ function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps)
             <Text
               numberOfLines={1}
               style={{
-                color: isFocused ? "#7136FD" : "#A89AB8",
+                color: isFocused ? C.tabIndicator : C.tabInactive,
                 fontSize: 10,
                 lineHeight: 13,
                 fontWeight: isFocused ? "800" : "600",
@@ -115,6 +117,7 @@ function PoketTabBar({ state, descriptors, navigation }: MaterialTopTabBarProps)
 }
 
 export function Layout() {
+  const C = useTheme();
   return (
     <Tab.Navigator
       tabBarPosition="bottom"
@@ -122,7 +125,7 @@ export function Layout() {
       screenOptions={{
         swipeEnabled: false,
         animationEnabled: true,
-        sceneStyle: { backgroundColor: "#0B0813" },
+        sceneStyle: { backgroundColor: C.bg },
       }}
     >
       <Tab.Screen name="Home" component={Home} />

@@ -7,19 +7,7 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { getDebtAdvice, DebtAdvice } from "../../services/smartAdvice";
 import { BNPLRow } from "../components/BNPLRow";
 import { TextShimmer } from "../components/TextShimmer";
-
-const C = {
-  bg: "#0B0813",
-  card: "rgba(255, 255, 255, 0.075)",
-  cardSoft: "rgba(255, 255, 255, 0.065)",
-  primary: "#7136FD",
-  primarySoft: "rgba(113, 54, 253, 0.15)",
-  textMuted: "#BEB3CB",
-  textSoft: "#DED6FF",
-  amber: "#F6A623",
-  danger: "#FF6262",
-  border: "rgba(255,255,255,0.18)",
-};
+import { useTheme } from "../../theme";
 
 const monthlyIncome = 2000;
 const bnplPlans = [
@@ -30,9 +18,11 @@ const bnplPlans = [
 const totalMonthly = bnplPlans.reduce((sum, p) => sum + p.monthlyAmount, 0);
 const incomePercentage = Math.round((totalMonthly / monthlyIncome) * 100);
 const risk: "low" | "medium" | "high" = incomePercentage >= 25 ? "high" : incomePercentage >= 15 ? "medium" : "low";
-const pctColor = incomePercentage < 15 ? C.primary : incomePercentage < 25 ? C.amber : C.danger;
+// pctColor computed inside component using C from useTheme
 
 export function DebtRadar() {
+  const C = useTheme();
+  const pctColor = incomePercentage < 15 ? C.primary : incomePercentage < 25 ? C.amber : C.danger;
   const navigation = useNavigation<NavigationProp<{ Profile: undefined; [key: string]: undefined }>>();
   const [advice, setAdvice] = useState<DebtAdvice | null>(null);
   const [loading, setLoading] = useState(true);
@@ -50,7 +40,7 @@ export function DebtRadar() {
   }[risk];
 
   return (
-    <LinearGradient colors={["#3E0D6F", "#1C0B35", "#0B0813", "#0B0813"]} locations={[0, 0.15, 0.45, 0.92]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <LinearGradient colors={C.gradientColors as any} locations={C.gradientLocations as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }} edges={["top", "left", "right"]}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
           {/* Back button + title */}
@@ -61,7 +51,7 @@ export function DebtRadar() {
             <ChevronLeft color="#BEB3CB" size={18} />
             <Text style={{ color: "#BEB3CB", fontSize: 14 }}>Back to Profile</Text>
           </TouchableOpacity>
-          <Text style={{ color: "white", fontSize: 28, fontWeight: "900", marginBottom: 4 }}>Debt Radar</Text>
+          <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginBottom: 4 }}>Debt Radar</Text>
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>Track your BNPL commitments</Text>
 
           <View style={{ backgroundColor: bannerConfig.bg, borderWidth: 1, borderColor: bannerConfig.border, borderRadius: 24, padding: 16, flexDirection: "row", alignItems: "flex-start", gap: 12, marginBottom: 16 }}>
@@ -78,7 +68,7 @@ export function DebtRadar() {
             {[
               { label: "Monthly total", value: `RM ${totalMonthly}`, color: C.danger },
               { label: "% of income", value: `${incomePercentage}%`, color: pctColor },
-              { label: "Active plans", value: `${bnplPlans.length} plans`, color: "white" },
+              { label: "Active plans", value: `${bnplPlans.length} plans`, color: C.text },
             ].map((stat) => (
               <View key={stat.label} style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: C.border }}>
                 <Text style={{ color: C.textMuted, fontSize: 11, marginBottom: 4 }}>{stat.label}</Text>
@@ -87,7 +77,7 @@ export function DebtRadar() {
             ))}
           </View>
 
-          <Text style={{ color: "white", fontSize: 16, fontWeight: "900", marginBottom: 10 }}>Active BNPL Plans</Text>
+          <Text style={{ color: C.text, fontSize: 16, fontWeight: "900", marginBottom: 10 }}>Active BNPL Plans</Text>
           <View style={{ gap: 10, marginBottom: 20 }}>
             {bnplPlans.map((plan) => (
               <BNPLRow key={plan.id} provider={plan.provider} initial={plan.initial} monthlyAmount={plan.monthlyAmount} monthsLeft={plan.monthsLeft} risk={plan.risk} />
@@ -101,10 +91,10 @@ export function DebtRadar() {
             </View>
             {loading ? <TextShimmer lines={4} /> : (
               <>
-                <Text style={{ color: "white", fontSize: 13, lineHeight: 20, marginBottom: 10 }}>{advice?.summary}</Text>
+                <Text style={{ color: C.text, fontSize: 13, lineHeight: 20, marginBottom: 10 }}>{advice?.summary}</Text>
                 <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 10, marginBottom: 10 }}>
                   <Text style={{ color: C.primary, fontSize: 12, fontWeight: "900", marginBottom: 4 }}>Top action:</Text>
-                  <Text style={{ color: "white", fontSize: 13, lineHeight: 20 }}>{advice?.topAction}</Text>
+                  <Text style={{ color: C.text, fontSize: 13, lineHeight: 20 }}>{advice?.topAction}</Text>
                 </View>
                 <View style={{ borderTopWidth: 1, borderTopColor: C.border, paddingTop: 10 }}>
                   <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 4 }}>Estimated debt-free:</Text>

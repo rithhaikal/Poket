@@ -6,18 +6,14 @@ import { useState, useEffect } from "react";
 import { getSavingsAdvice, SavingsAdvice } from "../../services/smartAdvice";
 import { TextShimmer } from "../components/TextShimmer";
 import { useAppContext, Goal, GoalStatus } from "../../context/AppContext";
+import { useTheme } from "../../theme";
 
-const C = {
-  bg: "#0B0813", card: "rgba(255,255,255,0.075)", cardSoft: "rgba(255,255,255,0.065)",
-  primary: "#7136FD", primarySoft: "rgba(113, 54, 253, 0.15)", textMuted: "#BEB3CB",
-  textSoft: "#DED6FF", amber: "#F6A623", border: "rgba(255,255,255,0.18)",
-};
 
 const EMOJIS = ["🌙", "🛡️", "✈️", "🏠", "🎓", "💍", "🚗", "💻", "🎸", "👟", "🐕"];
 
 const monthlyRoundUp = 42.80;
 
-function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => void }) {
+function GoalCard({ goal, onDelete, C }: { goal: Goal; onDelete: (id: string) => void; C: any }) {
   const pct = Math.min(100, Math.round((goal.saved / goal.target) * 100));
   const sc: Record<GoalStatus, { label: string; bg: string; text: string; barColor: string }> = {
     "on-track": { label: "On track", bg: "rgba(113, 54, 253, 0.15)", text: C.primary, barColor: C.primary },
@@ -44,7 +40,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
             <Text style={{ fontSize: 22 }}>{goal.emoji}</Text>
           </View>
           <View style={{ flex: 1 }}>
-            <Text style={{ color: "white", fontWeight: "900", fontSize: 16 }}>{goal.name}</Text>
+            <Text style={{ color: C.text, fontWeight: "900", fontSize: 16 }}>{goal.name}</Text>
             <Text style={{ color: C.textMuted, fontSize: 12 }}>RM {goal.saved.toFixed(2)} / RM {goal.target.toFixed(2)}</Text>
             {goal.deadline ? <Text style={{ color: C.textMuted, fontSize: 11, marginTop: 2 }}>Due: {goal.deadline}</Text> : null}
           </View>
@@ -61,7 +57,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
           </TouchableOpacity>
         </View>
       </View>
-      <View style={{ height: 6, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 999, overflow: "hidden" }}>
+      <View style={{ height: 6, backgroundColor: C.borderSoft, borderRadius: 999, overflow: "hidden" }}>
         <View style={{ width: `${pct}%` as any, height: "100%", backgroundColor: s.barColor, borderRadius: 999 }} />
       </View>
       <Text style={{ color: C.textMuted, fontSize: 11 }}>
@@ -72,6 +68,7 @@ function GoalCard({ goal, onDelete }: { goal: Goal; onDelete: (id: string) => vo
 }
 
 export function SavingsGoals() {
+  const C = useTheme();
   const { goals, addGoal, removeGoal } = useAppContext();
   const [aiData, setAiData] = useState<SavingsAdvice | null>(null);
   const [aiLoading, setAiLoading] = useState(true);
@@ -97,10 +94,10 @@ export function SavingsGoals() {
   };
 
   return (
-    <LinearGradient colors={["#3E0D6F", "#1C0B35", "#0B0813", C.bg]} locations={[0, 0.15, 0.45, 0.92]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <LinearGradient colors={C.gradientColors as any} locations={C.gradientLocations as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }} edges={["top", "left", "right"]}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
-          <Text style={{ color: "white", fontSize: 28, fontWeight: "900", marginBottom: 4 }}>My Savings</Text>
+          <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginBottom: 4 }}>My Savings</Text>
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>Round-up engine active</Text>
 
           {/* Round-up banner */}
@@ -114,17 +111,17 @@ export function SavingsGoals() {
             onPress={() => setShowModal(true)}
             style={{ backgroundColor: C.primary, borderRadius: 20, paddingVertical: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginBottom: 20 }}
           >
-            <Plus color="white" size={20} />
-            <Text style={{ color: "white", fontWeight: "900", fontSize: 15 }}>Add New Goal</Text>
+            <Plus color={C.text} size={20} />
+            <Text style={{ color: C.text, fontWeight: "900", fontSize: 15 }}>Add New Goal</Text>
           </TouchableOpacity>
 
           {/* Goal cards */}
           <View style={{ gap: 14, marginBottom: 20 }}>
-            {goals.map((goal) => <GoalCard key={goal.id} goal={goal} onDelete={removeGoal} />)}
+            {goals.map((goal) => <GoalCard key={goal.id} goal={goal} onDelete={removeGoal} C={C} />)}
           </View>
 
           {/* AI Coach */}
-          <Text style={{ color: "white", fontWeight: "900", fontSize: 16, marginBottom: 12 }}>AI Savings Coach</Text>
+          <Text style={{ color: C.text, fontWeight: "900", fontSize: 16, marginBottom: 12 }}>AI Savings Coach</Text>
           {aiLoading ? (
             <View style={{ backgroundColor: C.cardSoft, borderRadius: 24, borderWidth: 1, borderColor: C.border, padding: 16, marginBottom: 20 }}>
               <TextShimmer lines={3} />
@@ -132,13 +129,13 @@ export function SavingsGoals() {
           ) : (
             <View style={{ flexDirection: "row", gap: 8, marginBottom: 20 }}>
               {[
-                { label: "Tip", value: aiData?.tip, color: "white" },
-                { label: "Projection", value: aiData?.projectionMessage, color: "white" },
+                { label: "Tip", value: aiData?.tip, color: C.primary },
+                { label: "Projection", value: aiData?.projectionMessage, color: C.primary },
                 { label: "Vibe check", value: aiData?.motivationLine, color: C.primary },
               ].map((item) => (
                 <View key={item.label} style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: C.border }}>
                   <Text style={{ color: C.textMuted, fontSize: 11, marginBottom: 6 }}>{item.label}</Text>
-                  <Text style={{ color: item.color, fontSize: 12, lineHeight: 18, fontWeight: item.label === "Vibe check" ? "900" : "400" }}>{item.value}</Text>
+                  <Text style={{ color: item.color, fontSize: 12, lineHeight: 18, fontWeight: "900" }}>{item.value}</Text>
                 </View>
               ))}
             </View>
@@ -149,9 +146,9 @@ export function SavingsGoals() {
         <Modal visible={showModal} transparent animationType="slide" onRequestClose={() => setShowModal(false)}>
           <TouchableOpacity style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.6)" }} activeOpacity={1} onPress={() => setShowModal(false)} />
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}>
-            <View style={{ backgroundColor: "#10092A", borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 48, borderTopWidth: 1, borderTopColor: C.border }}>
+            <View style={{ backgroundColor: C.modalBg, borderTopLeftRadius: 32, borderTopRightRadius: 32, padding: 24, paddingBottom: 48, borderTopWidth: 1, borderTopColor: C.border }}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-                <Text style={{ color: "white", fontSize: 20, fontWeight: "900" }}>New Savings Goal</Text>
+                <Text style={{ color: C.text, fontSize: 20, fontWeight: "900" }}>New Savings Goal</Text>
                 <TouchableOpacity onPress={() => setShowModal(false)} style={{ width: 34, height: 34, borderRadius: 17, backgroundColor: "rgba(255,255,255,0.08)", alignItems: "center", justifyContent: "center" }}>
                   <X color={C.textMuted} size={18} />
                 </TouchableOpacity>
@@ -183,7 +180,7 @@ export function SavingsGoals() {
                     placeholder="+"
                     placeholderTextColor={C.textMuted}
                     maxLength={4} // Allow longer length temporarily to catch complex emojis before regex
-                    style={{ flex: 1, width: "100%", fontSize: 22, color: "white", textAlign: "center", textAlignVertical: "center", padding: 0, margin: 0 }}
+                    style={{ flex: 1, width: "100%", fontSize: 22, color: C.text, textAlign: "center", textAlignVertical: "center", padding: 0, margin: 0 }}
                     onFocus={() => {
                       if (EMOJIS.includes(selectedEmoji)) setSelectedEmoji("");
                     }}
@@ -197,7 +194,7 @@ export function SavingsGoals() {
                 onChangeText={setNewName}
                 placeholder="e.g. New Laptop"
                 placeholderTextColor={C.textMuted}
-                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: "white", fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: C.border }}
+                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: C.text, fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: C.border }}
               />
 
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 6 }}>Target amount (RM)</Text>
@@ -207,7 +204,7 @@ export function SavingsGoals() {
                 placeholder="e.g. 2000"
                 placeholderTextColor={C.textMuted}
                 keyboardType="numeric"
-                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: "white", fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: C.border }}
+                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: C.text, fontSize: 15, marginBottom: 14, borderWidth: 1, borderColor: C.border }}
               />
 
               <Text style={{ color: C.textMuted, fontSize: 12, marginBottom: 6 }}>Deadline (optional)</Text>
@@ -216,7 +213,7 @@ export function SavingsGoals() {
                 onChangeText={setNewDeadline}
                 placeholder="e.g. Dec 2026"
                 placeholderTextColor={C.textMuted}
-                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: "white", fontSize: 15, marginBottom: 20, borderWidth: 1, borderColor: C.border }}
+                style={{ backgroundColor: "rgba(255,255,255,0.07)", borderRadius: 14, padding: 14, color: C.text, fontSize: 15, marginBottom: 20, borderWidth: 1, borderColor: C.border }}
               />
 
               <TouchableOpacity

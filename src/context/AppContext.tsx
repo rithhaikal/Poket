@@ -41,7 +41,10 @@ interface AppState {
   energy: number;
   unlockedAuras: string[];
   equippedAura: string;
-  // New confetti state and actions
+  // Theme
+  isDarkMode: boolean;
+  toggleTheme: () => void;
+  // Confetti state and actions
   showConfetti: boolean;
   triggerConfetti: () => void;
   resetConfetti: () => void;
@@ -93,6 +96,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [showConfetti, setShowConfetti] = useState(false);
   const triggerConfetti = () => setShowConfetti(true);
   const resetConfetti = () => setShowConfetti(false);
+  const [isDarkMode, setIsDarkMode] = useState(true);
+  const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
   const [equippedAura, setEquippedAura] = useState("origin");
   const [totalSpent, setTotalSpent] = useState(
@@ -173,7 +178,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, isOnboarded, energy, unlockedAuras, equippedAura, showConfetti, triggerConfetti, resetConfetti, completeOnboarding, resetOnboarding, addTransaction, addGoal, removeGoal, addSavedAmount, earnEnergy, unlockAura, equipAura }}>
+    <AppContext.Provider value={{ transactions, goals, balance, totalSpent, budgetLimit: BUDGET_LIMIT, categorySpending, isOnboarded, energy, unlockedAuras, equippedAura, isDarkMode, toggleTheme, showConfetti, triggerConfetti, resetConfetti, completeOnboarding, resetOnboarding, addTransaction, addGoal, removeGoal, addSavedAmount, earnEnergy, unlockAura, equipAura }}>
       {children}
     </AppContext.Provider>
   );

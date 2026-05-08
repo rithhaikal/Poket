@@ -6,12 +6,7 @@ import { useState, useEffect } from "react";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { getChallengeMotivation, ChallengeMotivation } from "../../services/smartAdvice";
 import { TextShimmer } from "../components/TextShimmer";
-
-const C = {
-  bg: "#0B0813", card: "rgba(255,255,255,0.075)", cardSoft: "rgba(255,255,255,0.065)",
-  primary: "#7136FD", primarySoft: "rgba(113, 54, 253, 0.15)", textMuted: "#BEB3CB",
-  textSoft: "#DED6FF", amber: "#F6A623", danger: "#FF6262", border: "rgba(255,255,255,0.18)",
-};
+import { useTheme } from "../../theme";
 
 const challengeData = {
   rank: 1842,
@@ -34,6 +29,7 @@ const topPct = Math.round((challengeData.rank / challengeData.totalParticipants)
 const progressPct = Math.round((challengeData.daysCurrent / challengeData.totalDays) * 100);
 
 export function Challenge() {
+  const C = useTheme();
   const navigation = useNavigation<NavigationProp<{ Profile: undefined; [key: string]: undefined }>>();
   const [aiData, setAiData] = useState<ChallengeMotivation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +44,7 @@ export function Challenge() {
   };
 
   return (
-    <LinearGradient colors={["#3E0D6F", "#1C0B35", "#0B0813", C.bg]} locations={[0, 0.15, 0.45, 0.92]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
+    <LinearGradient colors={C.gradientColors as any} locations={C.gradientLocations as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }} edges={["top", "left", "right"]}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
           <TouchableOpacity
@@ -58,7 +54,7 @@ export function Challenge() {
             <ChevronLeft color="#BEB3CB" size={18} />
             <Text style={{ color: "#BEB3CB", fontSize: 14 }}>Back to Profile</Text>
           </TouchableOpacity>
-          <Text style={{ color: "white", fontSize: 28, fontWeight: "900", marginBottom: 4 }}>Poket Challenge</Text>
+          <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginBottom: 4 }}>Poket Challenge</Text>
           <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>30-Day National Savings Campaign · GXBank</Text>
 
           {/* Rank card */}
@@ -67,7 +63,7 @@ export function Challenge() {
               <Trophy color={C.primary} size={20} />
               <Text style={{ color: C.textMuted, fontSize: 13 }}>Your Ranking</Text>
             </View>
-            <Text style={{ color: "white", fontSize: 38, fontWeight: "900" }}>#{challengeData.rank.toLocaleString()}</Text>
+            <Text style={{ color: C.text, fontSize: 38, fontWeight: "900" }}>#{challengeData.rank.toLocaleString()}</Text>
             <Text style={{ color: C.textMuted, fontSize: 13, marginBottom: 8 }}>of {challengeData.totalParticipants.toLocaleString()} participants</Text>
             <View style={{ backgroundColor: C.primarySoft, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4, alignSelf: "flex-start" }}>
               <Text style={{ color: C.primary, fontSize: 12, fontWeight: "900" }}>Top {topPct}% nationally</Text>
@@ -78,7 +74,7 @@ export function Challenge() {
           <View style={{ backgroundColor: C.card, borderRadius: 24, borderWidth: 1, borderColor: C.border, padding: 16, marginBottom: 16 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}>
               <Text style={{ color: C.textMuted, fontSize: 12 }}>Challenge progress</Text>
-              <Text style={{ color: "white", fontSize: 12, fontWeight: "900" }}>Day {challengeData.daysCurrent}/{challengeData.totalDays}</Text>
+              <Text style={{ color: C.text, fontSize: 12, fontWeight: "900" }}>Day {challengeData.daysCurrent}/{challengeData.totalDays}</Text>
             </View>
             <View style={{ height: 8, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 999, overflow: "hidden", marginBottom: 8 }}>
               <View style={{ width: `${progressPct}%` as any, height: "100%", backgroundColor: C.primary, borderRadius: 999 }} />
@@ -87,7 +83,7 @@ export function Challenge() {
           </View>
 
           {/* Milestones */}
-          <Text style={{ color: "white", fontSize: 16, fontWeight: "900", marginBottom: 12 }}>Milestones</Text>
+          <Text style={{ color: C.text, fontSize: 16, fontWeight: "900", marginBottom: 12 }}>Milestones</Text>
           <View style={{ gap: 10, marginBottom: 20 }}>
             {milestones.map((m) => (
               <View key={m.id} style={{ backgroundColor: C.card, borderRadius: 24, borderWidth: 1, borderColor: m.achieved ? "rgba(113, 54, 253, 0.3)" : C.border, padding: 16, flexDirection: "row", alignItems: "flex-start", gap: 14 }}>
@@ -95,7 +91,7 @@ export function Challenge() {
                   {m.achieved ? <CheckCircle color={C.primary} size={22} /> : <Lock color={C.textMuted} size={22} />}
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 14, marginBottom: 2 }}>{m.title}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 14, marginBottom: 2 }}>{m.title}</Text>
                   <Text style={{ color: C.textMuted, fontSize: 12 }}>{m.reward}</Text>
                   {!m.achieved && m.daysLeft ? (
                     <View style={{ backgroundColor: "rgba(32,155,230,0.15)", borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, alignSelf: "flex-start", marginTop: 6 }}>
@@ -109,7 +105,7 @@ export function Challenge() {
           </View>
 
           {/* AI Motivation */}
-          <Text style={{ color: "white", fontWeight: "900", fontSize: 16, marginBottom: 12 }}>AI Coach</Text>
+          <Text style={{ color: C.text, fontWeight: "900", fontSize: 16, marginBottom: 12 }}>AI Coach</Text>
           {loading ? (
             <View style={{ gap: 10, marginBottom: 20 }}>
               {[1, 2, 3].map((i) => (
@@ -122,15 +118,15 @@ export function Challenge() {
             <View style={{ gap: 10, marginBottom: 20 }}>
               <View style={{ backgroundColor: C.card, borderRadius: 20, borderWidth: 1, borderColor: C.border, padding: 14, flexDirection: "row", gap: 10 }}>
                 <Sparkles color={C.primary} size={18} />
-                <Text style={{ color: "white", fontSize: 13, lineHeight: 18, flex: 1 }}>{aiData?.rankMessage}</Text>
+                <Text style={{ color: C.text, fontSize: 13, lineHeight: 18, flex: 1 }}>{aiData?.rankMessage}</Text>
               </View>
               <View style={{ backgroundColor: C.cardSoft, borderRadius: 20, borderWidth: 1, borderColor: C.border, padding: 14 }}>
                 <Text style={{ color: C.primary, fontSize: 11, fontWeight: "900", marginBottom: 4 }}>This week's tip:</Text>
-                <Text style={{ color: "white", fontSize: 13, lineHeight: 18 }}>{aiData?.weeklyTip}</Text>
+                <Text style={{ color: C.text, fontSize: 13, lineHeight: 18 }}>{aiData?.weeklyTip}</Text>
               </View>
               <View style={{ backgroundColor: C.cardSoft, borderRadius: 20, borderWidth: 1, borderColor: C.border, padding: 14 }}>
                 <Text style={{ color: C.textMuted, fontSize: 11, marginBottom: 4 }}>Countdown:</Text>
-                <Text style={{ color: "white", fontSize: 13, lineHeight: 18 }}>{aiData?.streakNote}</Text>
+                <Text style={{ color: C.text, fontSize: 13, lineHeight: 18 }}>{aiData?.streakNote}</Text>
               </View>
             </View>
           )}

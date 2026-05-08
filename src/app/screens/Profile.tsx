@@ -1,9 +1,10 @@
-import { View, Text, ScrollView, TouchableOpacity, Alert, Dimensions } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert, Dimensions, Switch } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Shield, Sparkles, LogOut, CheckCircle2, Lock, Zap, Star } from "lucide-react-native";
+import { Shield, Sparkles, LogOut, CheckCircle2, Lock, Zap, Star, Moon, Sun } from "lucide-react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
+import { useTheme } from "../../theme";
 import { AuraCore, AuraType, AURA_CONFIG } from "../components/AuraCore";
 import Animated, {
   useSharedValue,
@@ -17,19 +18,6 @@ import { useEffect } from "react";
 
 const { width } = Dimensions.get("window");
 
-const C = {
-  bg: "#0B0813",
-  card: "rgba(255,255,255,0.075)",
-  cardSoft: "rgba(255,255,255,0.065)",
-  primary: "#7136FD",
-  primarySoft: "rgba(113, 54, 253, 0.15)",
-  textMuted: "#BEB3CB",
-  textSoft: "#DED6FF",
-  amber: "#F6A623",
-  danger: "#FF6262",
-  green: "#20E69C",
-  border: "rgba(255,255,255,0.18)",
-};
 
 type TabParamList = {
   Home: undefined; Spending: undefined; Goals: undefined;
@@ -59,6 +47,7 @@ function getLevelProgress(energy: number) {
 }
 
 function AnimatedLevelBadge({ level }: { level: number }) {
+  const C = useTheme();
   const glow = useSharedValue(0.6);
   useEffect(() => {
     glow.value = withRepeat(
@@ -106,9 +95,11 @@ function AnimatedLevelBadge({ level }: { level: number }) {
 
 export function Profile() {
   const navigation = useNavigation<NavigationProp<TabParamList>>();
+  const C = useTheme();
   const {
     goals, transactions, budgetLimit, resetOnboarding,
     energy, unlockedAuras, equippedAura, earnEnergy, unlockAura, equipAura,
+    isDarkMode, toggleTheme,
   } = useAppContext();
 
   const level = getLevel(energy);
@@ -150,8 +141,8 @@ export function Profile() {
 
   return (
     <LinearGradient
-      colors={["#3E0D6F", "#1C0B35", "#0B0813", C.bg]}
-      locations={[0, 0.15, 0.45, 0.92]}
+      colors={C.gradientColors as any}
+      locations={C.gradientLocations as any}
       start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}
       style={{ flex: 1 }}
     >
@@ -163,7 +154,7 @@ export function Profile() {
         >
           {/* Header */}
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 22 }}>
-            <Text style={{ color: "white", fontSize: 28, fontWeight: "900" }}>Profile</Text>
+            <Text style={{ color: C.text, fontSize: 28, fontWeight: "900" }}>Profile</Text>
             <View style={{ backgroundColor: C.primarySoft, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 999, flexDirection: "row", alignItems: "center", gap: 6 }}>
               <Zap color={C.primary} size={14} fill={C.primary} />
               <Text style={{ color: C.primary, fontWeight: "900", fontSize: 13 }}>{energy} Sparks</Text>
@@ -181,7 +172,7 @@ export function Profile() {
             }}
           >
             <LinearGradient
-              colors={["rgba(30,10,60,0.95)", "rgba(11,8,19,0.98)"]}
+              colors={[C.card, C.cardSoft]}
               style={{ padding: 28, alignItems: "center" }}
             >
               {/* Aura orb + level badge side-by-side */}
@@ -192,7 +183,7 @@ export function Profile() {
                 </View>
               </View>
 
-              <Text style={{ color: "white", fontSize: 22, fontWeight: "900", marginTop: 18 }}>{user.name}</Text>
+              <Text style={{ color: C.text, fontSize: 22, fontWeight: "900", marginTop: 18 }}>{user.name}</Text>
               <Text style={{ color: C.textMuted, fontSize: 12, marginTop: 2 }}>{user.university}</Text>
 
               {/* Aura name tag */}
@@ -207,7 +198,7 @@ export function Profile() {
                   backgroundColor: "rgba(113,54,253,0.12)",
                 }}
               >
-                <Text style={{ color: "white", fontWeight: "900", fontSize: 12 }}>
+                <Text style={{ color: C.text, fontWeight: "900", fontSize: 12 }}>
                   ✦ {equippedCfg.name}
                 </Text>
               </View>
@@ -220,7 +211,7 @@ export function Profile() {
                     {levelProgress} / 100 XP
                   </Text>
                 </View>
-                <View style={{ height: 8, backgroundColor: "rgba(255,255,255,0.08)", borderRadius: 999, overflow: "hidden" }}>
+                <View style={{ height: 8, backgroundColor: C.borderSoft, borderRadius: 999, overflow: "hidden" }}>
                   <LinearGradient
                     colors={equippedCfg.colors}
                     start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}
@@ -234,19 +225,19 @@ export function Profile() {
 
               {/* Stats row */}
               <View style={{ flexDirection: "row", gap: 12, marginTop: 16, width: "100%" }}>
-                <View style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 12, alignItems: "center" }}>
+                <View style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 16, padding: 12, alignItems: "center" }}>
                   <Shield color={C.amber} size={14} style={{ marginBottom: 4 }} />
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 16 }}>RM {totalSaved}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 16 }}>RM {totalSaved}</Text>
                   <Text style={{ color: C.textMuted, fontSize: 10 }}>Total saved</Text>
                 </View>
-                <View style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 12, alignItems: "center" }}>
+                <View style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 16, padding: 12, alignItems: "center" }}>
                   <Sparkles color={C.primary} size={14} style={{ marginBottom: 4 }} />
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 16 }}>{energy}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 16 }}>{energy}</Text>
                   <Text style={{ color: C.textMuted, fontSize: 10 }}>Total Sparks</Text>
                 </View>
-                <View style={{ flex: 1, backgroundColor: "rgba(255,255,255,0.06)", borderRadius: 16, padding: 12, alignItems: "center" }}>
+                <View style={{ flex: 1, backgroundColor: C.cardSoft, borderRadius: 16, padding: 12, alignItems: "center" }}>
                   <Star color={C.amber} size={14} fill={C.amber} style={{ marginBottom: 4 }} />
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 16 }}>Top 4%</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 16 }}>Top 4%</Text>
                   <Text style={{ color: C.textMuted, fontSize: 10 }}>National rank</Text>
                 </View>
               </View>
@@ -254,7 +245,7 @@ export function Profile() {
           </View>
 
           {/* ── Earn Sparks ── */}
-          <Text style={{ color: "white", fontSize: 16, fontWeight: "900", marginBottom: 10 }}>⚡ Earn Sparks</Text>
+          <Text style={{ color: C.text, fontSize: 16, fontWeight: "900", marginBottom: 10 }}>⚡ Earn Sparks</Text>
           <View style={{ gap: 8, marginBottom: 24 }}>
             {[
               { label: "Saving Streak", xp: 10, detail: "Earned daily for staying on budget", color: C.primary },
@@ -265,7 +256,7 @@ export function Profile() {
                 key={q.label}
                 onPress={() => { earnEnergy(q.xp); Alert.alert("⚡ Energy Spark!", `Your core gained +${q.xp} Sparks for ${q.label}.`); }}
                 style={{
-                  backgroundColor: "rgba(255,255,255,0.04)",
+                  backgroundColor: C.cardSoft,
                   borderRadius: 20,
                   padding: 14,
                   flexDirection: "row",
@@ -279,7 +270,7 @@ export function Profile() {
                   <Zap color={q.color} size={18} fill={q.color} />
                 </View>
                 <View style={{ flex: 1 }}>
-                  <Text style={{ color: "white", fontWeight: "900", fontSize: 13 }}>{q.label}</Text>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 13 }}>{q.label}</Text>
                   <Text style={{ color: C.textMuted, fontSize: 11 }}>{q.detail}</Text>
                 </View>
                 <View style={{ backgroundColor: `${q.color}22`, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 999 }}>
@@ -291,8 +282,8 @@ export function Profile() {
 
           {/* ── Evolution Chamber ── */}
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 12 }}>
-            <Sparkles color="white" size={16} />
-            <Text style={{ color: "white", fontSize: 16, fontWeight: "900" }}>Evolution Chamber</Text>
+            <Sparkles color={C.text} size={16} />
+            <Text style={{ color: C.text, fontSize: 16, fontWeight: "900" }}>Evolution Chamber</Text>
           </View>
           <View style={{ gap: 12, marginBottom: 24 }}>
             {AURA_EVOLUTIONS.map((item) => {
@@ -317,8 +308,8 @@ export function Profile() {
                   <LinearGradient
                     colors={
                       isEquipped
-                        ? ["rgba(30,10,65,0.97)", "rgba(15,6,35,0.97)"]
-                        : ["rgba(20,12,40,0.9)", "rgba(11,8,19,0.9)"]
+                        ? [C.primarySoft, C.cardSoft]
+                        : [C.card, C.cardSoft]
                     }
                     style={{ flexDirection: "row", alignItems: "center", padding: 16, gap: 16 }}
                   >
@@ -330,10 +321,10 @@ export function Profile() {
                     {/* Info */}
                     <View style={{ flex: 1 }}>
                       <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
-                        <Text style={{ color: "white", fontWeight: "900", fontSize: 15 }}>{cfg.name}</Text>
+                        <Text style={{ color: C.text, fontWeight: "900", fontSize: 15 }}>{cfg.name}</Text>
                         {isEquipped && (
                           <View style={{ backgroundColor: cfg.glow.replace("0.55", "0.25").replace("0.60", "0.25").replace("0.50", "0.25"), paddingHorizontal: 8, paddingVertical: 2, borderRadius: 999 }}>
-                            <Text style={{ color: "white", fontSize: 10, fontWeight: "900" }}>ACTIVE</Text>
+                            <Text style={{ color: C.text, fontSize: 10, fontWeight: "900" }}>ACTIVE</Text>
                           </View>
                         )}
                       </View>
@@ -370,6 +361,55 @@ export function Profile() {
                 </TouchableOpacity>
               );
             })}
+          </View>
+
+          {/* ── Appearance ── */}
+          <View
+            style={{
+              backgroundColor: C.card,
+              borderRadius: 24,
+              borderWidth: 1,
+              borderColor: C.border,
+              padding: 20,
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ color: C.text, fontSize: 16, fontWeight: "900", marginBottom: 16 }}>⚙️ Appearance</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+                <View
+                  style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 21,
+                    backgroundColor: isDarkMode ? "rgba(113,54,253,0.18)" : "rgba(246,166,35,0.15)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  {isDarkMode ? (
+                    <Moon color={C.primary} size={20} />
+                  ) : (
+                    <Sun color={C.amber} size={20} />
+                  )}
+                </View>
+                <View>
+                  <Text style={{ color: C.text, fontWeight: "900", fontSize: 14 }}>
+                    {isDarkMode ? "Dark Mode" : "Light Mode"}
+                  </Text>
+                  <Text style={{ color: C.textMuted, fontSize: 11, marginTop: 1 }}>
+                    {isDarkMode ? "Easy on the eyes at night" : "Bright and clear"}
+                  </Text>
+                </View>
+              </View>
+              <Switch
+                value={isDarkMode}
+                onValueChange={toggleTheme}
+                trackColor={{ false: "rgba(99,38,232,0.18)", true: C.primary }}
+                thumbColor={isDarkMode ? "#DED6FF" : "#6326E8"}
+                ios_backgroundColor="rgba(99,38,232,0.18)"
+              />
+            </View>
           </View>
 
           {/* Log out */}
