@@ -1,5 +1,5 @@
 import "./global.css";
-import { NavigationContainer } from "@react-navigation/native";
+import { DarkTheme, NavigationContainer } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Layout } from "./src/app/components/Layout";
 import { AppProvider } from "./src/context/AppContext";
@@ -17,7 +17,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
       <AppProvider>
-        <NavigationContainer>
+        <NavigationContainer theme={DarkTheme}>
           <StatusBar style="light" translucent backgroundColor="transparent" />
           <RootNavigator />
         </NavigationContainer>

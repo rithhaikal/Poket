@@ -40,7 +40,9 @@ export function Home() {
   const [nudgeLoading, setNudgeLoading] = useState(true);
   const [nudgeDismissed, setNudgeDismissed] = useState(false);
   const [showSimulator, setShowSimulator] = useState(false);
-  const [lastAdded, setLastAdded] = useState<string | null>(null);
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   const budgetUsedPct = Math.min(100, Math.round((totalSpent / budgetLimit) * 100));
   const savedAmount = 180;
@@ -92,8 +94,7 @@ export function Home() {
 
   const handleSimulate = (preset: typeof PRESETS[0]) => {
     addTransaction(preset);
-    setLastAdded(preset.merchant);
-    setTimeout(() => setLastAdded(null), 2000);
+    setShowSimulator(false);
   };
 
   const handleSaveIt = () => {
@@ -144,7 +145,7 @@ export function Home() {
             </View>
           </View>
 
-          <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 2 }}>Good morning,</Text>
+          <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 2 }}>{greeting},</Text>
           <Text style={{ color: C.text, fontSize: 27, fontWeight: "900", marginBottom: 24 }}>Fakhrul</Text>
 
           {/* Balance */}
@@ -206,7 +207,7 @@ export function Home() {
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Stats — computed from REAL transaction data */}
+          {/* Stats row */}
           <View style={{ flexDirection: "row", gap: 12, marginBottom: 20 }}>
             <View style={{ flex: 1, backgroundColor: C.cardSoft, borderWidth: 1, borderColor: C.border, borderRadius: 24, padding: 16 }}>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8 }}>
@@ -321,11 +322,7 @@ export function Home() {
             </View>
             <Text style={{ color: C.textMuted, fontSize: 13, marginBottom: 4 }}>Tap any merchant — the AI will react to your spend.</Text>
             <Text style={{ color: C.textMuted, fontSize: 11, marginBottom: 16 }}>Budget: RM {totalSpent.toFixed(0)} / RM {budgetLimit} used ({budgetUsedPct}%)</Text>
-            {lastAdded ? (
-              <View style={{ backgroundColor: C.primarySoft, borderRadius: 12, padding: 10, marginBottom: 12, alignItems: "center" }}>
-                <Text style={{ color: C.primary, fontWeight: "900" }}>✓ {lastAdded} added — nudge refreshing...</Text>
-              </View>
-            ) : null}
+
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
               {PRESETS.map((p) => (
                 <TouchableOpacity key={p.merchant} onPress={() => handleSimulate(p)} style={{ backgroundColor: C.cardSoft, borderWidth: 1, borderColor: C.border, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 10, minWidth: "30%", flex: 1, alignItems: "center" }}>

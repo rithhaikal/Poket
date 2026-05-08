@@ -40,7 +40,7 @@ export function Challenge() {
   }, []);
 
   const handleShare = () => {
-    Share.share({ message: `I've saved RM ${challengeData.savedSoFar} in the #PoketChallenge! Join now on GXBank. 💚 #GXBank #Poket` });
+    Share.share({ message: `I've saved RM ${challengeData.savedSoFar} in the #PoketChallenge! Join now on GXBank. 💜 #GXBank #Poket` });
   };
 
   return (

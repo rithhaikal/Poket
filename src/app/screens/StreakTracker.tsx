@@ -16,13 +16,13 @@ const todayIndex = 10;
 
 const dayLetters = ["S", "M", "T", "W", "T", "F", "S"];
 
-// Dynamically generate the calendar so "Today" always perfectly matches the real-world day of the week during the pitch!
+// Generate 14-day calendar starting from 10 days ago, anchored to today's real day
 const weekHistory = Array.from({ length: 14 }).map((_, i) => {
   const d = new Date();
   d.setDate(d.getDate() - (todayIndex - i));
   return {
     day: dayLetters[d.getDay()],
-    done: i <= todayIndex, // past days are 'done', future days are blank
+    done: i <= todayIndex,
   };
 });
 
@@ -44,10 +44,11 @@ export function StreakTracker() {
     todayBudgetUsed < 70 ? C.primary : todayBudgetUsed < 90 ? C.amber : C.danger;
 
   useEffect(() => {
+    setLoading(true);
     getStreakMotivation(currentStreak, personalBest)
       .then(setAiData)
       .finally(() => setLoading(false));
-  }, []);
+  }, [currentStreak]);
 
   return (
     <LinearGradient colors={C.gradientColors as any} locations={C.gradientLocations as any} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ flex: 1 }}>

@@ -9,6 +9,9 @@ import { useAppContext } from "../../context/AppContext";
 import { useTheme } from "../../theme";
 
 const filters = ["All", "Food & drinks", "Transport", "Entertainment", "Shopping", "Health"];
+
+const currentMonthYear = new Date().toLocaleString("en-MY", { month: "long", year: "numeric" });
+
 export function SpendingDNA() {
   const C = useTheme();
   const { categorySpending } = useAppContext();
@@ -27,7 +30,7 @@ export function SpendingDNA() {
       <SafeAreaView style={{ flex: 1, backgroundColor: "transparent" }} edges={["top", "left", "right"]}>
         <ScrollView style={{ flex: 1 }} contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 18, paddingBottom: 112 }} showsVerticalScrollIndicator={false}>
           <Text style={{ color: C.text, fontSize: 28, fontWeight: "900", marginBottom: 4 }}>Spending</Text>
-          <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>May 2026 breakdown</Text>
+          <Text style={{ color: C.textSoft, fontSize: 14, marginBottom: 20 }}>{currentMonthYear} breakdown</Text>
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 18 }}>
             {filters.map((filter) => {

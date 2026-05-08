@@ -6,15 +6,8 @@ import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useAppContext } from "../../context/AppContext";
 import { useTheme } from "../../theme";
 import { AuraCore, AuraType, AURA_CONFIG } from "../components/AuraCore";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withRepeat,
-  withSequence,
-  Easing,
-} from "react-native-reanimated";
-import { useEffect } from "react";
+import { Animated, Easing } from "react-native";
+import { useEffect, useRef } from "react";
 
 const { width } = Dimensions.get("window");
 
@@ -48,17 +41,16 @@ function getLevelProgress(energy: number) {
 
 function AnimatedLevelBadge({ level }: { level: number }) {
   const C = useTheme();
-  const glow = useSharedValue(0.6);
+  const glow = useRef(new Animated.Value(0.6)).current;
   useEffect(() => {
-    glow.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 1000, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.5, { duration: 1000, easing: Easing.inOut(Easing.sin) }),
-      ),
-      -1, false,
-    );
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glow, { toValue: 1, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(glow, { toValue: 0.5, duration: 1000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start();
+    return () => glow.stopAnimation();
   }, []);
-  const style = useAnimatedStyle(() => ({ opacity: glow.value }));
 
   return (
     <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -71,7 +63,7 @@ function AnimatedLevelBadge({ level }: { level: number }) {
             borderRadius: 36,
             backgroundColor: "rgba(113,54,253,0.35)",
           },
-          style,
+          { opacity: glow },
         ]}
       />
       <View
@@ -361,6 +353,54 @@ export function Profile() {
                 </TouchableOpacity>
               );
             })}
+          </View>
+
+          {/* ── Tools & Features ── */}
+          <Text style={{ color: C.text, fontSize: 16, fontWeight: "900", marginBottom: 10 }}>🛠️ Tools</Text>
+          <View style={{ gap: 8, marginBottom: 24 }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Challenge")}
+              style={{
+                backgroundColor: C.cardSoft,
+                borderRadius: 20,
+                padding: 14,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 14,
+                borderWidth: 1,
+                borderColor: C.border,
+              }}
+            >
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(32, 230, 156, 0.15)", alignItems: "center", justifyContent: "center" }}>
+                <Star color={C.green} size={18} fill={C.green} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: C.text, fontWeight: "900", fontSize: 14 }}>Challenge Leaderboard</Text>
+                <Text style={{ color: C.textMuted, fontSize: 11 }}>View national savings rankings</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("DebtRadar")}
+              style={{
+                backgroundColor: C.cardSoft,
+                borderRadius: 20,
+                padding: 14,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 14,
+                borderWidth: 1,
+                borderColor: C.border,
+              }}
+            >
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: "rgba(255, 98, 98, 0.15)", alignItems: "center", justifyContent: "center" }}>
+                <Shield color={C.danger} size={18} />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ color: C.text, fontWeight: "900", fontSize: 14 }}>Debt Radar</Text>
+                <Text style={{ color: C.textMuted, fontSize: 11 }}>Track BNPL risks and commitments</Text>
+              </View>
+            </TouchableOpacity>
           </View>
 
           {/* ── Appearance ── */}

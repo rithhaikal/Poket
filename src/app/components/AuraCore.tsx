@@ -1,14 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withSequence,
-  withTiming,
-  Easing,
-} from 'react-native-reanimated';
 
 export type AuraType = 'origin' | 'plasma' | 'void' | 'quantum';
 
@@ -51,97 +43,65 @@ export const AURA_CONFIG: Record<
 export const AuraCore: React.FC<AuraCoreProps> = ({ type, size, animated = true }) => {
   const cfg = AURA_CONFIG[type] ?? AURA_CONFIG.origin;
 
-  const ring1Scale = useSharedValue(1);
-  const ring1Opacity = useSharedValue(0);
-  const ring2Scale = useSharedValue(1);
-  const ring2Opacity = useSharedValue(0);
-  const coreScale = useSharedValue(1);
-  const glowOpacity = useSharedValue(0.55);
+  // RN Animated values
+  const ring1Scale = useRef(new Animated.Value(1)).current;
+  const ring1Opacity = useRef(new Animated.Value(0)).current;
+  const ring2Scale = useRef(new Animated.Value(1)).current;
+  const ring2Opacity = useRef(new Animated.Value(0)).current;
+  const coreScale = useRef(new Animated.Value(1)).current;
+  const glowOpacity = useRef(new Animated.Value(0.55)).current;
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     if (!animated) return;
 
-    // Ring 1 — sonar ping
-    ring1Scale.value = withRepeat(
-      withSequence(
-        withTiming(1, { duration: 0 }),
-        withTiming(1.8, { duration: 2200, easing: Easing.out(Easing.cubic) }),
-      ),
-      -1,
-      false,
-    );
-    ring1Opacity.value = withRepeat(
-      withSequence(
-        withTiming(0.75, { duration: 0 }),
-        withTiming(0, { duration: 2200, easing: Easing.out(Easing.quad) }),
-      ),
-      -1,
-      false,
-    );
+    const sonarLoop = (scale: Animated.Value, opacity: Animated.Value) =>
+      Animated.loop(
+        Animated.parallel([
+          Animated.sequence([
+            Animated.timing(scale, { toValue: 1, duration: 0, useNativeDriver: true }),
+            Animated.timing(scale, { toValue: 1.8, duration: 2200, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+          ]),
+          Animated.sequence([
+            Animated.timing(opacity, { toValue: 0.75, duration: 0, useNativeDriver: true }),
+            Animated.timing(opacity, { toValue: 0, duration: 2200, easing: Easing.out(Easing.quad), useNativeDriver: true }),
+          ]),
+        ])
+      );
 
-    // Ring 2 — offset by 1100 ms
+    sonarLoop(ring1Scale, ring1Opacity).start();
+
     timerRef.current = setTimeout(() => {
-      ring2Scale.value = withRepeat(
-        withSequence(
-          withTiming(1, { duration: 0 }),
-          withTiming(1.8, { duration: 2200, easing: Easing.out(Easing.cubic) }),
-        ),
-        -1,
-        false,
-      );
-      ring2Opacity.value = withRepeat(
-        withSequence(
-          withTiming(0.5, { duration: 0 }),
-          withTiming(0, { duration: 2200, easing: Easing.out(Easing.quad) }),
-        ),
-        -1,
-        false,
-      );
+      sonarLoop(ring2Scale, ring2Opacity).start();
     }, 1100);
 
-    // Core breathe
-    coreScale.value = withRepeat(
-      withSequence(
-        withTiming(1.06, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.96, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-      ),
-      -1,
-      false,
-    );
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(coreScale, { toValue: 1.06, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(coreScale, { toValue: 0.96, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start();
 
-    // Ambient glow pulse
-    glowOpacity.value = withRepeat(
-      withSequence(
-        withTiming(0.85, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-        withTiming(0.35, { duration: 1500, easing: Easing.inOut(Easing.sin) }),
-      ),
-      -1,
-      false,
-    );
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(glowOpacity, { toValue: 0.85, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+        Animated.timing(glowOpacity, { toValue: 0.35, duration: 1500, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
+      ])
+    ).start();
 
     return () => {
       if (timerRef.current) clearTimeout(timerRef.current);
+      ring1Scale.stopAnimation();
+      ring1Opacity.stopAnimation();
+      ring2Scale.stopAnimation();
+      ring2Opacity.stopAnimation();
+      coreScale.stopAnimation();
+      glowOpacity.stopAnimation();
     };
   }, [animated, type]);
 
-  const ring1Style = useAnimatedStyle(() => ({
-    transform: [{ scale: ring1Scale.value }],
-    opacity: ring1Opacity.value,
-  }));
-  const ring2Style = useAnimatedStyle(() => ({
-    transform: [{ scale: ring2Scale.value }],
-    opacity: ring2Opacity.value,
-  }));
-  const coreStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: coreScale.value }],
-  }));
-  const glowStyle = useAnimatedStyle(() => ({
-    opacity: glowOpacity.value,
-  }));
-
-  const ringBase = {
+  const ringBase: any = {
     position: 'absolute' as const,
     width: size,
     height: size,
@@ -162,17 +122,17 @@ export const AuraCore: React.FC<AuraCoreProps> = ({ type, size, animated = true 
             borderRadius: size * 0.575,
             backgroundColor: cfg.glow,
           },
-          glowStyle,
+          { opacity: glowOpacity },
         ]}
       />
 
       {/* Sonar rings */}
-      <Animated.View style={[ringBase, ring1Style]} />
-      <Animated.View style={[ringBase, ring2Style]} />
+      <Animated.View style={[ringBase, { transform: [{ scale: ring1Scale }], opacity: ring1Opacity }]} />
+      <Animated.View style={[ringBase, { transform: [{ scale: ring2Scale }], opacity: ring2Opacity }]} />
 
       {/* Inner orb */}
       <Animated.View
-        style={[{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden' }, coreStyle]}
+        style={{ width: size, height: size, borderRadius: size / 2, overflow: 'hidden', transform: [{ scale: coreScale }] }}
       >
         <LinearGradient
           colors={cfg.colors}
