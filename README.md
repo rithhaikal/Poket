@@ -1,5 +1,7 @@
 # 🟣 Poket — Smart Savings by GXBank
 
+**Prototype Link** - https://poket-babycoder.netlify.app/
+
 > A modern, Gen Z-focused financial wellness app built for the UTMxHackathon'26.
 
 ---
