@@ -27,10 +27,9 @@
 | Layer | Technology |
 |---|---|
 | Framework | React Native (Expo SDK 54) |
-| Navigation | React Navigation — Material Top Tabs (bottom-positioned, native swipe transitions) |
 | Styling | Inline StyleSheet + expo-linear-gradient |
 | State | React Context API |
-| AI Advice | Google Gemini API (via `smartAdvice.ts`) |
+| AI Advice | Google Gemini API |
 | Icons | lucide-react-native |
 | Animations | React Native Reanimated, Lottie & Animated API |
 
